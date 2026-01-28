@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Deiiwo Coffee - Café de especialidad colombiano">
+    <title>Deiiwo Coffee</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav">
+            <a href="#inicio" class="logo">Deiiwo Coffee</a>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#inicio" class="nav-link active">Inicio</a></li>
+                <li><a href="#origen" class="nav-link">Origen y Legado</a></li>
+                <li><a href="#cafes" class="nav-link">Productos</a></li>
+                <li><a href="#experiencias" class="nav-link">Experiencias</a></li>
+                <li><a href="#distribuidores" class="nav-link">Trabaja con Nosotros</a></li>
+                <li><a href="#contacto" class="nav-link">Contacto</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <button class="cart-btn" id="cartBtn" aria-label="Carrito de compras">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 2L6 6M15 2l3 4M6 6h12M6 6l1.5 13.5A2 2 0 009.5 21h5a2 2 0 002-1.5L18 6M10 11v6M14 11v6"/>
+                    </svg>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" id="inicio">
+        <div class="hero-noise"></div>
+        <div class="hero-content">
+            <p class="hero-tag">Café de Especialidad Colombiano</p>
+            <h1 class="hero-title">
+                <span class="line">El ritual</span>
+                <span class="line">perfecto comienza</span>
+                <span class="line accent">con Deiiwo.</span>
+            </h1>
+            <p class="hero-sub">Granos seleccionados de fincas de altura. Tostado artesanal. Experiencia sensorial única.</p>
+            <div class="hero-actions">
+                <a href="tienda.html" class="btn btn-primary">Descubrir Productos</a>
+                <a href="#origen" class="btn btn-ghost">Nuestra Historia</a>
+            </div>
+        </div>
+        <div class="hero-scroll">
+            <span>Scroll</span>
+            <div class="scroll-bar"></div>
+        </div>
+    </section>
+
+    <!-- Origen y Legado -->
+    <section class="section section-light" id="origen">
+        <div class="container">
+            <div class="origin-grid">
+                <div class="origin-content reveal">
+                    <p class="section-tag">Somos Deiiwo</p>
+                    <h2 class="section-title">Origen y Legado</h2>
+                    <p class="origin-text">Cada grano cuenta una historia. Trabajamos de la mano con caficultores de las montañas colombianas, quienes generación tras generación han cultivado con pasión los mejores granos del mundo.</p>
+                    <p class="origin-text">Desde las tierras altas del Huila hasta el Eje Cafetero, honramos el legado de nuestros productores llevando su excelencia a más de 50 países. Comercio justo, sostenibilidad y calidad excepcional.</p>
+
+                </div>
+
+                <div class="origin-visual reveal">
+                    <div class="origin-img-3d" id="tilt3d">
+                        <img src="img/cafes.png" alt="Cafés Deiiwo">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Productos -->
+    <section class="productos-section" id="cafes" style="background-image: url('img/productos.png');">
+        <div class="productos-overlay"></div>
+        <div class="container">
+            <div class="productos-content reveal">
+                <p class="section-tag">Colección</p>
+                <h2 class="section-title">Nuestros Productos</h2>
+                <p class="productos-desc">Cafés de especialidad, dulces artesanales y accesorios exclusivos. Todo lo que necesitas para vivir la experiencia Deiiwo.</p>
+                <a href="tienda.html" class="btn btn-primary">Todos los Productos</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experiencias -->
+    <section class="section section-light" id="experiencias">
+        <div class="container">
+            <header class="section-header reveal">
+                <p class="section-tag">Eventos</p>
+                <h2 class="section-title">Experiencias</h2>
+                <p class="section-desc">Llevamos el mejor café colombiano a tus eventos y espacios especiales</p>
+            </header>
+
+            <div class="exp-grid">
+                <article class="exp-card reveal">
+                    <div class="exp-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M3 9h18M3 15h18M9 9v12M15 9v12M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="exp-title">Mesas de Café</h3>
+                    <p class="exp-desc">Estaciones de café premium para tus reuniones, conferencias o eventos sociales. Baristas profesionales y equipos de alta gama.</p>
+                </article>
+
+                <article class="exp-card exp-featured reveal">
+                    <div class="exp-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                    <h3 class="exp-title">Eventos Empresariales</h3>
+                    <p class="exp-desc">Experiencias corporativas que impresionan. Coffee breaks, lanzamientos de producto, team buildings y capacitaciones con café de especialidad.</p>
+                </article>
+
+                <article class="exp-card reveal">
+                    <div class="exp-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15.5a2.5 2.5 0 01-2.5 2.5h-13A2.5 2.5 0 013 15.5V12a9 9 0 1118 0v3.5z"/>
+                            <path d="M12 3v1m4.22.78l-.71.71M21 12h-1M4 12H3m3.93-5.51l-.71-.71M12 17v4m-4-4l-1 4m6-4l1 4"/>
+                        </svg>
+                    </div>
+                    <h3 class="exp-title">Fiestas y Festivales</h3>
+                    <p class="exp-desc">Presencia en festivales, bodas, quinceañeras y celebraciones especiales. Creamos momentos memorables con cada taza.</p>
+                </article>
+
+                <article class="exp-card reveal">
+                    <div class="exp-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M3 3h18v18H3zM3 9h18M9 21V9"/>
+                            <circle cx="6" cy="6" r="1" fill="currentColor"/>
+                            <path d="M14 15l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="exp-title">Mercados Campesinos</h3>
+                    <p class="exp-desc">Encuéntranos en los principales mercados de la ciudad. Café recién tostado, conexión directa con el productor y precios justos.</p>
+                </article>
+            </div>
+
+            <div class="section-cta reveal">
+                <a href="https://wa.me/573022199112?text=Hola%20Deiiwo%20Coffee!%0A%0AEstoy%20interesado%20en%20sus%20servicios%20de%20eventos%20y%20me%20gustar%C3%ADa%20solicitar%20una%20cotizaci%C3%B3n.%0A%0A*Tipo%20de%20evento:*%0A*Fecha%20estimada:*%0A*N%C3%BAmero%20de%20personas:*%0A*Ubicaci%C3%B3n:*%0A%0AQuedo%20atento%20a%20su%20respuesta." target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">Solicitar Cotización</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trabaja con Nosotros / Distribuidores -->
+    <section class="section section-dark" id="distribuidores">
+        <div class="container">
+            <header class="section-header reveal">
+                <p class="section-tag">Distribuidores</p>
+                <h2 class="section-title">Trabaja con Nosotros</h2>
+                <p class="section-desc">Lleva el mejor café colombiano a tu negocio. Trabajamos con restaurantes, hoteles, cafeterías y empresas.</p>
+            </header>
+
+            <div class="distribuidor-main reveal">
+                <div class="distribuidor-info">
+                    <h3 class="distribuidor-main-title">Café de especialidad para tu negocio</h3>
+                    <p class="distribuidor-main-desc">Ofrecemos café de alta calidad con precios preferenciales y acompañamiento personalizado. Ideal para quienes buscan diferenciarse con un producto premium.</p>
+
+                    <div class="distribuidor-tipos">
+                        <div class="distribuidor-tipo">
+                            <span class="tipo-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M3 3h18v18H3zM3 9h18M9 21V9"/>
+                                </svg>
+                            </span>
+                            <span class="tipo-text">Restaurantes</span>
+                        </div>
+                        <div class="distribuidor-tipo">
+                            <span class="tipo-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                            </span>
+                            <span class="tipo-text">Hoteles</span>
+                        </div>
+                        <div class="distribuidor-tipo">
+                            <span class="tipo-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>
+                                    <path d="M6 1v3M10 1v3M14 1v3"/>
+                                </svg>
+                            </span>
+                            <span class="tipo-text">Cafeterías</span>
+                        </div>
+                        <div class="distribuidor-tipo">
+                            <span class="tipo-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/>
+                                    <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+                                </svg>
+                            </span>
+                            <span class="tipo-text">Empresas</span>
+                        </div>
+                    </div>
+
+                    <ul class="distribuidor-benefits-main">
+                        <li>Precios preferenciales por volumen</li>
+                        <li>Capacitación y acompañamiento</li>
+                        <li>Entrega directa a tu negocio</li>
+                        <li>Muestras sin costo</li>
+                    </ul>
+                </div>
+
+                <div class="distribuidor-cta-box">
+                    <h4>¿Interesado en ser distribuidor?</h4>
+                    <p>Contáctanos y nuestro equipo te brindará toda la información que necesitas, incluyendo nuestra <strong>Tabla de Valores para Distribuidores</strong>.</p>
+                    <a href="mailto:deiwocoffee@gmail.com?subject=Solicitud%20de%20Informaci%C3%B3n%20-%20Distribuidor&body=Hola%20Deiiwo%20Coffee%2C%0A%0AHe%20visitado%20su%20p%C3%A1gina%20web%20y%20estoy%20interesado%20en%20trabajar%20con%20ustedes%20como%20distribuidor.%0A%0AMe%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos%20y%20la%20tabla%20de%20valores%20para%20distribuidores.%0A%0AQuedo%20atento%20a%20su%20respuesta.%0A%0ASaludos%20cordiales." class="btn btn-primary">Solicitar Información</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / Contacto -->
+    <footer class="footer" id="contacto">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="#inicio" class="footer-logo">Deiiwo</a>
+                    <p class="footer-tagline">Elevando la experiencia del café colombiano al mundo.</p>
+                    <div class="footer-social">
+                        <a href="https://www.instagram.com/deiiwocoffee/?hl=es" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.tiktok.com/@deiwo.coffee" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                            </svg>
+                        </a>
+                        <a href="https://wa.me/573022199112" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                        </a>
+                        <a href="mailto:deiwocoffee@gmail.com" aria-label="Email">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-nav">
+                    <div class="footer-col">
+                        <h4>Navegación</h4>
+                        <ul>
+                            <li><a href="#inicio">Inicio</a></li>
+                            <li><a href="#origen">Origen y Legado</a></li>
+                            <li><a href="tienda.html">Productos</a></li>
+                            <li><a href="#experiencias">Experiencias</a></li>
+                            <li><a href="#distribuidores">Trabaja con Nosotros</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Servicios</h4>
+                        <ul>
+                            <li><a href="index.html#experiencias">Eventos</a></li>
+                            <li><a href="index.html#distribuidores">Distribuidores</a></li>
+                            <li><a href="tienda.html">Productos</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Contacto</h4>
+                        <ul>
+                            <li><a href="mailto:deiwocoffee@gmail.com">deiwocoffee@gmail.com</a></li>
+                            <li><a href="https://wa.me/573022199112" target="_blank" rel="noopener noreferrer">+57 302 2199112</a></li>
+                            <li>Envigado, Colombia</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Deiiwo Coffee. Todos los derechos reservados.</p>
+                <div class="footer-legal">
+                    <a href="#">Privacidad</a>
+                    <a href="#">Términos</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Carrito de compras -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <aside class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>Carrito de Compras</h2>
+            <button class="cart-close" id="cartClose" aria-label="Cerrar carrito">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="cart-body" id="cartBody">
+            <div class="cart-empty" id="cartEmpty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M9 2L6 6M15 2l3 4M6 6h12M6 6l1.5 13.5A2 2 0 009.5 21h5a2 2 0 002-1.5L18 6"/>
+                </svg>
+                <p>Tu carrito está vacío</p>
+            </div>
+            <div class="cart-items" id="cartItems"></div>
+        </div>
+
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0</span>
+            </div>
+            <button class="btn-clear-cart" id="clearCart">Vaciar Carrito</button>
+            <div class="cart-payment-options">
+                <a href="https://wa.me/573022199112?text=Hola%20Deiiwo%20Coffee!%0A%0AQuiero%20hacer%20un%20pedido:%0A" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp" id="checkoutWhatsApp">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    WhatsApp
+                </a>
+                <button class="btn btn-bold" id="checkoutBold">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="5" width="20" height="14" rx="2"/>
+                        <line x1="2" y1="10" x2="22" y2="10"/>
+                    </svg>
+                    Pagar con Bold
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <script src="script.js"></script>
+</body>
+</html>
