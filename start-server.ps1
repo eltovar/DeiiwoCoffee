@@ -1,5 +1,6 @@
 # Servidor HTTP simple con PowerShell
 # Uso: .\start-server.ps1
+# python -m http.server 8000
 
 $port = 8080
 $url = "http://localhost:$port"

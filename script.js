@@ -1,4 +1,74 @@
 // ===================================
+// SISTEMA DE IDIOMAS (i18n)
+// ===================================
+class LanguageManager {
+    constructor() {
+        this.currentLang = this.loadLanguage();
+        this.init();
+    }
+
+    init() {
+        this.langToggle = document.getElementById('langToggle');
+        this.langCurrent = document.querySelector('.lang-current');
+
+        if (this.langToggle) {
+            this.langToggle.addEventListener('click', () => this.toggleLanguage());
+        }
+
+        // Aplicar idioma guardado
+        this.applyLanguage(this.currentLang);
+    }
+
+    loadLanguage() {
+        return localStorage.getItem('deiiwo_lang') || 'es';
+    }
+
+    saveLanguage(lang) {
+        localStorage.setItem('deiiwo_lang', lang);
+    }
+
+    toggleLanguage() {
+        this.currentLang = this.currentLang === 'es' ? 'en' : 'es';
+        this.saveLanguage(this.currentLang);
+        this.applyLanguage(this.currentLang);
+    }
+
+    applyLanguage(lang) {
+        // Actualizar botón
+        if (this.langCurrent) {
+            this.langCurrent.textContent = lang.toUpperCase();
+        }
+
+        // Actualizar atributo html lang
+        document.documentElement.lang = lang;
+
+        // Traducir todos los elementos con data-i18n
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang] && translations[lang][key]) {
+                el.textContent = translations[lang][key];
+            }
+        });
+
+        // Actualizar mensaje del carrito si existe
+        if (window.cart) {
+            window.cart.updateLanguage(lang);
+        }
+    }
+
+    getCurrentLang() {
+        return this.currentLang;
+    }
+
+    translate(key) {
+        return translations[this.currentLang]?.[key] || key;
+    }
+}
+
+// Inicializar sistema de idiomas
+const langManager = new LanguageManager();
+
+// ===================================
 // CURSOR PERSONALIZADO
 // ===================================
 const dot = document.querySelector('.cursor-dot');
@@ -260,7 +330,6 @@ class ShoppingCart {
         this.cartCount = document.getElementById('cartCount');
         this.clearCartBtn = document.getElementById('clearCart');
         this.checkoutWhatsApp = document.getElementById('checkoutWhatsApp');
-        this.checkoutBold = document.getElementById('checkoutBold');
 
         this.bindEvents();
         this.render();
@@ -292,11 +361,6 @@ class ShoppingCart {
         // Checkout WhatsApp
         this.checkoutWhatsApp?.addEventListener('click', () => {
             this.generateWhatsAppMessage();
-        });
-
-        // Checkout Bold
-        this.checkoutBold?.addEventListener('click', () => {
-            this.processBoldPayment();
         });
     }
 
@@ -373,13 +437,11 @@ class ShoppingCart {
             if (this.cartItems) this.cartItems.style.display = 'none';
             if (this.clearCartBtn) this.clearCartBtn.disabled = true;
             if (this.checkoutWhatsApp) this.checkoutWhatsApp.style.display = 'none';
-            if (this.checkoutBold) this.checkoutBold.style.display = 'none';
         } else {
             if (this.cartEmpty) this.cartEmpty.style.display = 'none';
             if (this.cartItems) this.cartItems.style.display = 'flex';
             if (this.clearCartBtn) this.clearCartBtn.disabled = false;
             if (this.checkoutWhatsApp) this.checkoutWhatsApp.style.display = 'flex';
-            if (this.checkoutBold) this.checkoutBold.style.display = 'flex';
             this.renderItems();
         }
     }
@@ -387,11 +449,12 @@ class ShoppingCart {
     renderItems() {
         if (!this.cartItems) return;
 
+        const unitText = langManager.translate('cart.unit');
         this.cartItems.innerHTML = this.items.map(item => `
             <div class="cart-item">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name}</div>
-                    <div class="cart-item-price">${this.formatPrice(item.price)} c/u</div>
+                    <div class="cart-item-price">${this.formatPrice(item.price)} ${unitText}</div>
                     <div class="cart-item-actions">
                         <button class="qty-btn" onclick="cart.updateQuantity('${item.name}', -1)">-</button>
                         <span class="qty-value">${item.quantity}</span>
@@ -421,7 +484,7 @@ class ShoppingCart {
 
     showFeedback(button) {
         const originalText = button.textContent;
-        button.textContent = '✓ Agregado';
+        button.textContent = langManager.translate('cart.added');
         button.style.background = 'var(--white)';
         button.style.color = 'var(--black)';
 
@@ -433,22 +496,26 @@ class ShoppingCart {
     }
 
     generateWhatsAppMessage() {
-        let message = 'Hola Deiiwo Coffee!\n\nQuiero hacer un pedido:\n\n';
+        const greeting = langManager.translate('cart.whatsapp.greeting');
+        const deliveryNote = langManager.translate('cart.delivery.note');
+
+        let message = greeting;
 
         this.items.forEach(item => {
             message += `• ${item.name} x${item.quantity} - ${this.formatPrice(item.price * item.quantity)}\n`;
         });
 
-        message += `\n*Total: ${this.formatPrice(this.getTotal())}*\n\nGracias!`;
+        message += `\n${deliveryNote}`;
 
         const encodedMessage = encodeURIComponent(message);
         this.checkoutWhatsApp.href = `https://wa.me/573022199112?text=${encodedMessage}`;
     }
 
-    processBoldPayment() {
-        // TODO: Implementar integración con Bold
-        // Por ahora mostramos un mensaje al usuario
-        alert('La integración con Bold estará disponible próximamente. Por favor, usa WhatsApp para realizar tu pedido.');
+    updateLanguage() {
+        // Re-renderizar items si hay productos
+        if (this.items.length > 0) {
+            this.renderItems();
+        }
     }
 
     saveCart() {

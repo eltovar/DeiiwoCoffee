@@ -21,15 +21,18 @@
             <a href="index.html" class="logo">Deiiwo Coffee</a>
 
             <ul class="nav-menu" id="navMenu">
-                <li><a href="index.html#inicio" class="nav-link">Inicio</a></li>
-                <li><a href="index.html#origen" class="nav-link">Origen y Legado</a></li>
-                <li><a href="tienda.html" class="nav-link active">Productos</a></li>
-                <li><a href="index.html#experiencias" class="nav-link">Experiencias</a></li>
-                <li><a href="index.html#distribuidores" class="nav-link">Trabaja con Nosotros</a></li>
-                <li><a href="index.html#contacto" class="nav-link">Contacto</a></li>
+                <li><a href="index.html#inicio" class="nav-link" data-i18n="nav.inicio">Inicio</a></li>
+                <li><a href="index.html#origen" class="nav-link" data-i18n="nav.origen">Origen y Legado</a></li>
+                <li><a href="tienda.html" class="nav-link active" data-i18n="nav.productos">Productos</a></li>
+                <li><a href="index.html#experiencias" class="nav-link" data-i18n="nav.experiencias">Experiencias</a></li>
+                <li><a href="index.html#distribuidores" class="nav-link" data-i18n="nav.trabaja">Trabaja con Nosotros</a></li>
+                <li><a href="index.html#contacto" class="nav-link" data-i18n="footer.contacto">Contacto</a></li>
             </ul>
 
             <div class="nav-actions">
+                <button class="lang-toggle" id="langToggle" aria-label="Cambiar idioma">
+                    <span class="lang-current">ES</span>
+                </button>
                 <button class="cart-btn" id="cartBtn" aria-label="Carrito de compras">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 2L6 6M15 2l3 4M6 6h12M6 6l1.5 13.5A2 2 0 009.5 21h5a2 2 0 002-1.5L18 6M10 11v6M14 11v6"/>
@@ -48,9 +51,9 @@
     <section class="tienda-hero">
         <div class="container">
             <div class="tienda-hero-content reveal">
-                <p class="section-tag">Tienda</p>
-                <h1 class="section-title">Nuestros Productos</h1>
-                <p class="section-desc">Cafés de especialidad, dulces artesanales y todo lo que necesitas para tu ritual perfecto</p>
+                <p class="section-tag" data-i18n="tienda.hero.subtitle">Tienda</p>
+                <h1 class="section-title" data-i18n="tienda.hero.title">Nuestros Productos</h1>
+                <p class="section-desc" data-i18n="tienda.hero.desc">Cafés de especialidad, dulces artesanales y todo lo que necesitas para tu ritual perfecto</p>
             </div>
         </div>
     </section>
@@ -60,8 +63,8 @@
         <div class="container">
             <!-- Categoría: Cafés -->
             <div class="categoria-header reveal">
-                <h2 class="categoria-title">Cafés de Especialidad</h2>
-                <p class="categoria-desc">Delicioso café de especialidad, cultivado en las majestuosas tierras de Jericó Antioquia. Lo puedes pedir según tu preferencia: molido o en grano. Envío incluido en Medellín y a nivel nacional.</p>
+                <h2 class="categoria-title" data-i18n="tienda.cafe.cat">Cafés de Especialidad</h2>
+                <p class="categoria-desc" data-i18n="tienda.cafe.cat.desc">Delicioso café de especialidad, cultivado en las majestuosas tierras de Jericó Antioquia. Lo puedes pedir según tu preferencia: molido o en grano. Envío incluido en Medellín y a nivel nacional.</p>
             </div>
 
             <div class="cards-grid">
@@ -73,11 +76,11 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title">Café Antioquia 250g</h3>
-                        <p class="card-desc">Café de especialidad cultivado en Jericó. Disponible molido o en grano según tu preferencia.</p>
+                        <h3 class="card-title" data-i18n="tienda.cafe.250.title">Café Antioquia 250g</h3>
+                        <p class="card-desc" data-i18n="tienda.cafe.250.desc">Café de especialidad cultivado en Jericó. Disponible molido o en grano según tu preferencia.</p>
                         <div class="card-footer">
                             <span class="card-price">$35.000</span>
-                            <button class="btn-card add-to-cart" data-name="Café Antioquia 250g" data-price="35000">Agregar</button>
+                            <button class="btn-card add-to-cart" data-name="Café Antioquia 250g" data-price="35000" data-i18n="tienda.btn.agregar">Agregar</button>
                         </div>
                     </div>
                 </article>
@@ -90,11 +93,11 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title">Café Antioquia 340g</h3>
-                        <p class="card-desc">Café de especialidad cultivado en Jericó. Disponible molido o en grano según tu preferencia.</p>
+                        <h3 class="card-title" data-i18n="tienda.cafe.340.title">Café Antioquia 340g</h3>
+                        <p class="card-desc" data-i18n="tienda.cafe.340.desc">Café de especialidad cultivado en Jericó. Disponible molido o en grano según tu preferencia.</p>
                         <div class="card-footer">
                             <span class="card-price">$45.000</span>
-                            <button class="btn-card add-to-cart" data-name="Café Antioquia 340g" data-price="45000">Agregar</button>
+                            <button class="btn-card add-to-cart" data-name="Café Antioquia 340g" data-price="45000" data-i18n="tienda.btn.agregar">Agregar</button>
                         </div>
                     </div>
                 </article>
@@ -107,11 +110,11 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title">Café Antioquia 500g</h3>
-                        <p class="card-desc">Café de especialidad cultivado en Jericó. Disponible molido o en grano según tu preferencia.</p>
+                        <h3 class="card-title" data-i18n="tienda.cafe.500.title">Café Antioquia 500g</h3>
+                        <p class="card-desc" data-i18n="tienda.cafe.500.desc">Café de especialidad cultivado en Jericó. Disponible molido o en grano según tu preferencia.</p>
                         <div class="card-footer">
                             <span class="card-price">$60.000</span>
-                            <button class="btn-card add-to-cart" data-name="Café Antioquia 500g" data-price="60000">Agregar</button>
+                            <button class="btn-card add-to-cart" data-name="Café Antioquia 500g" data-price="60000" data-i18n="tienda.btn.agregar">Agregar</button>
                         </div>
                     </div>
                 </article>
@@ -124,11 +127,11 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title">Café Antioquia 2500g</h3>
-                        <p class="card-desc">Café de especialidad cultivado en Jericó. Disponible molido o en grano según tu preferencia. Ideal para distribuidores.</p>
+                        <h3 class="card-title" data-i18n="tienda.cafe.2500.title">Café Antioquia 2500g</h3>
+                        <p class="card-desc" data-i18n="tienda.cafe.2500.desc">Café de especialidad cultivado en Jericó. Disponible molido o en grano según tu preferencia. Ideal para distribuidores.</p>
                         <div class="card-footer">
                             <span class="card-price">$220.000</span>
-                            <button class="btn-card add-to-cart" data-name="Café Antioquia 2500g" data-price="220000">Agregar</button>
+                            <button class="btn-card add-to-cart" data-name="Café Antioquia 2500g" data-price="220000" data-i18n="tienda.btn.agregar">Agregar</button>
                         </div>
                     </div>
                 </article>
@@ -136,7 +139,7 @@
 
             <!-- Categoría: Dulces -->
             <div class="categoria-header reveal" style="margin-top: 5rem;">
-                <h2 class="categoria-title">Dulces de Café</h2>
+                <h2 class="categoria-title" data-i18n="tienda.dulces.cat">Dulces de Café</h2>
             </div>
 
             <div class="cards-grid">
@@ -144,11 +147,11 @@
                     <div class="card-img" style="background-image: url('img/imgProductos/AlfajorCafe.png');">
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title">Alfajor de Café</h3>
-                        <p class="card-desc">Galleta de sabor café, cubierta con sabor a chocolate.</p>
+                        <h3 class="card-title" data-i18n="tienda.alfajor.title">Alfajor de Café</h3>
+                        <p class="card-desc" data-i18n="tienda.alfajor.desc">Galleta de sabor café, cubierta con sabor a chocolate.</p>
                         <div class="card-footer">
                             <span class="card-price">$25.000</span>
-                            <button class="btn-card add-to-cart" data-name="Alfajor de Café" data-price="25000">Agregar</button>
+                            <button class="btn-card add-to-cart" data-name="Alfajor de Café" data-price="25000" data-i18n="tienda.btn.agregar">Agregar</button>
                         </div>
                     </div>
                 </article>
@@ -157,11 +160,11 @@
                     <div class="card-img" style="background-image: url('img/imgProductos/DulceCafe.png');">
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title">Dulce de Café</h3>
-                        <p class="card-desc">Infundido con extracto de café de alta calidad, logrando un equilibrio perfecto entre el dulzor del caramelo de leche y notas tostadas del grano. Ideal para desayunos con waffles o como relleno de galletas.</p>
+                        <h3 class="card-title" data-i18n="tienda.dulce.title">Dulce de Café</h3>
+                        <p class="card-desc" data-i18n="tienda.dulce.desc">Infundido con extracto de café de alta calidad, logrando un equilibrio perfecto entre el dulzor del caramelo de leche y notas tostadas del grano. Ideal para desayunos con waffles o como relleno de galletas.</p>
                         <div class="card-footer">
                             <span class="card-price">$15.000</span>
-                            <button class="btn-card add-to-cart" data-name="Dulce de Café" data-price="15000">Agregar</button>
+                            <button class="btn-card add-to-cart" data-name="Dulce de Café" data-price="15000" data-i18n="tienda.btn.agregar">Agregar</button>
                         </div>
                     </div>
                 </article>
@@ -170,11 +173,11 @@
                     <div class="card-img" style="background-image: url('img/imgProductos/CoffeeCherries.png');">
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title">Coffee Cherries</h3>
-                        <p class="card-desc">Mermelada premium hecha con cereza de café, aprovechando toda la fruta. Innovador, sostenible y gourmet. No es café para tomar, sino un derivado para comer.</p>
+                        <h3 class="card-title" data-i18n="tienda.cherries.title">Coffee Cherries</h3>
+                        <p class="card-desc" data-i18n="tienda.cherries.desc">Mermelada premium hecha con cereza de café, aprovechando toda la fruta. Innovador, sostenible y gourmet. No es café para tomar, sino un derivado para comer.</p>
                         <div class="card-footer">
                             <span class="card-price">$20.000</span>
-                            <button class="btn-card add-to-cart" data-name="Coffee Cherries" data-price="20000">Agregar</button>
+                            <button class="btn-card add-to-cart" data-name="Coffee Cherries" data-price="20000" data-i18n="tienda.btn.agregar">Agregar</button>
                         </div>
                     </div>
                 </article>
@@ -183,11 +186,11 @@
                     <div class="card-img" style="background-image: url('img/imgProductos/panchitos.png');">
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title">Panchitos</h3>
-                        <p class="card-desc">Caramelo blando de leche con café y coco.</p>
+                        <h3 class="card-title" data-i18n="tienda.panchitos.title">Panchitos</h3>
+                        <p class="card-desc" data-i18n="tienda.panchitos.desc">Caramelo blando de leche con café y coco.</p>
                         <div class="card-footer">
                             <span class="card-price">$25.000</span>
-                            <button class="btn-card add-to-cart" data-name="Panchitos" data-price="25000">Agregar</button>
+                            <button class="btn-card add-to-cart" data-name="Panchitos" data-price="25000" data-i18n="tienda.btn.agregar">Agregar</button>
                         </div>
                     </div>
                 </article>
@@ -196,10 +199,10 @@
 <!-- Banner Próximamente -->
             <div class="coming-soon-banner reveal" style="margin-top: 5rem;">
                 <div class="coming-soon-content">
-                    <span class="coming-soon-tag">Próximamente</span>
-                    <h2 class="coming-soon-title">Deiiwo Coffee</h2>
-                    <p class="coming-soon-edition">Edición Quindío</p>
-                    <p class="coming-soon-desc">Una experiencia única desde el corazón del Eje Cafetero. Granos cultivados a más de 1.800 metros de altura con sabores que cuentan la historia de nuestra tierra.</p>
+                    <span class="coming-soon-tag" data-i18n="tienda.coming.badge">Próximamente</span>
+                    <h2 class="coming-soon-title" data-i18n="tienda.coming.title">Deiiwo Coffee</h2>
+                    <p class="coming-soon-edition" data-i18n="tienda.coming.subtitle">Edición Quindío</p>
+                    <p class="coming-soon-desc" data-i18n="tienda.coming.desc">Una experiencia única desde el corazón del Eje Cafetero. Granos cultivados a más de 1.800 metros de altura con sabores que cuentan la historia de nuestra tierra.</p>
                 </div>
                 <div class="coming-soon-decoration">
                     <svg class="deco-palm" viewBox="0 0 100 100" fill="currentColor">
@@ -222,7 +225,7 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <a href="index.html" class="footer-logo">Deiiwo</a>
-                    <p class="footer-tagline">Elevando la experiencia del café colombiano al mundo.</p>
+                    <p class="footer-tagline" data-i18n="footer.tagline">Elevando la experiencia del café colombiano al mundo.</p>
                     <div class="footer-social">
                         <a href="https://www.instagram.com/deiiwocoffee/?hl=es" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -250,25 +253,25 @@
 
                 <div class="footer-nav">
                     <div class="footer-col">
-                        <h4>Navegación</h4>
+                        <h4 data-i18n="footer.navegacion">Navegación</h4>
                         <ul>
-                            <li><a href="index.html#inicio">Inicio</a></li>
-                            <li><a href="index.html#origen">Origen y Legado</a></li>
-                            <li><a href="tienda.html">Productos</a></li>
-                            <li><a href="index.html#experiencias">Experiencias</a></li>
-                            <li><a href="index.html#distribuidores">Trabaja con Nosotros</a></li>
+                            <li><a href="index.html#inicio" data-i18n="nav.inicio">Inicio</a></li>
+                            <li><a href="index.html#origen" data-i18n="nav.origen">Origen y Legado</a></li>
+                            <li><a href="tienda.html" data-i18n="nav.productos">Productos</a></li>
+                            <li><a href="index.html#experiencias" data-i18n="nav.experiencias">Experiencias</a></li>
+                            <li><a href="index.html#distribuidores" data-i18n="nav.trabaja">Trabaja con Nosotros</a></li>
                         </ul>
                     </div>
                     <div class="footer-col">
-                        <h4>Servicios</h4>
+                        <h4 data-i18n="footer.servicios">Servicios</h4>
                         <ul>
-                            <li><a href="index.html#experiencias">Eventos</a></li>
-                            <li><a href="index.html#distribuidores">Distribuidores</a></li>
-                            <li><a href="tienda.html">Productos</a></li>
+                            <li><a href="index.html#experiencias" data-i18n="footer.eventos">Eventos</a></li>
+                            <li><a href="index.html#distribuidores" data-i18n="footer.distribuidores">Distribuidores</a></li>
+                            <li><a href="tienda.html" data-i18n="footer.productos">Productos</a></li>
                         </ul>
                     </div>
                     <div class="footer-col">
-                        <h4>Contacto</h4>
+                        <h4 data-i18n="footer.contacto">Contacto</h4>
                         <ul>
                             <li><a href="mailto:deiwocoffee@gmail.com">deiwocoffee@gmail.com</a></li>
                             <li><a href="https://wa.me/573022199112" target="_blank" rel="noopener noreferrer">+57 302 2199112</a></li>
@@ -279,10 +282,10 @@
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; 2025 Deiiwo Coffee. Todos los derechos reservados.</p>
+                <p data-i18n="footer.copyright">&copy; 2025 Deiiwo Coffee. Todos los derechos reservados.</p>
                 <div class="footer-legal">
-                    <a href="#">Privacidad</a>
-                    <a href="#">Términos</a>
+                    <a href="#" data-i18n="footer.privacidad">Privacidad</a>
+                    <a href="#" data-i18n="footer.terminos">Términos</a>
                 </div>
             </div>
         </div>
@@ -292,7 +295,7 @@
     <div class="cart-overlay" id="cartOverlay"></div>
     <aside class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
-            <h2>Carrito de Compras</h2>
+            <h2 data-i18n="cart.title">Carrito de Compras</h2>
             <button class="cart-close" id="cartClose" aria-label="Cerrar carrito">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M18 6L6 18M6 6l12 12"/>
@@ -305,35 +308,27 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path d="M9 2L6 6M15 2l3 4M6 6h12M6 6l1.5 13.5A2 2 0 009.5 21h5a2 2 0 002-1.5L18 6"/>
                 </svg>
-                <p>Tu carrito está vacío</p>
+                <p data-i18n="cart.empty">Tu carrito está vacío</p>
             </div>
             <div class="cart-items" id="cartItems"></div>
         </div>
 
         <div class="cart-footer">
             <div class="cart-total">
-                <span>Total:</span>
+                <span data-i18n="cart.total">Total:</span>
                 <span id="cartTotal">$0</span>
             </div>
-            <button class="btn-clear-cart" id="clearCart">Vaciar Carrito</button>
-            <div class="cart-payment-options">
-                <a href="https://wa.me/573022199112?text=Hola%20Deiiwo%20Coffee!%0A%0AQuiero%20hacer%20un%20pedido:%0A" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp" id="checkoutWhatsApp">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                    </svg>
-                    WhatsApp
-                </a>
-                <button class="btn btn-bold" id="checkoutBold">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="5" width="20" height="14" rx="2"/>
-                        <line x1="2" y1="10" x2="22" y2="10"/>
-                    </svg>
-                    Pagar con Bold
-                </button>
-            </div>
+            <button class="btn-clear-cart" id="clearCart" data-i18n="cart.clear">Vaciar Carrito</button>
+            <a href="https://wa.me/573022199112?text=Hola%20Deiiwo%20Coffee!%0A%0AQuiero%20hacer%20un%20pedido:%0A" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp" id="checkoutWhatsApp">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                <span data-i18n="cart.checkout">Pedir por WhatsApp</span>
+            </a>
         </div>
     </aside>
 
+    <script src="translations.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
