@@ -311,6 +311,26 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 }
 
 // ===================================
+// CAFÉ ESPECIALIDAD - SELECTOR DINÁMICO
+// ===================================
+const cafeTamano = document.getElementById('cafeTamano');
+const cafePrice = document.getElementById('cafePrice');
+const addCafeBtn = document.getElementById('addCafeToCart');
+
+if (cafeTamano && cafePrice) {
+    // Actualizar precio cuando cambia el tamaño
+    cafeTamano.addEventListener('change', () => {
+        const selectedOption = cafeTamano.options[cafeTamano.selectedIndex];
+        const price = parseInt(selectedOption.dataset.price);
+        cafePrice.textContent = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0
+        }).format(price);
+    });
+}
+
+// ===================================
 // CARRITO DE COMPRAS
 // ===================================
 class ShoppingCart {
@@ -348,7 +368,7 @@ class ShoppingCart {
             }
         });
 
-        // Botones agregar al carrito
+        // Botones agregar al carrito (productos sin selector)
         document.querySelectorAll('.add-to-cart').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const name = e.target.dataset.name;
@@ -357,6 +377,30 @@ class ShoppingCart {
                 this.showFeedback(e.target);
             });
         });
+
+        // Botón café de especialidad (con selectores de tamaño y presentación)
+        const addCafeBtn = document.getElementById('addCafeToCart');
+        if (addCafeBtn) {
+            addCafeBtn.addEventListener('click', (e) => {
+                const tamanoSelect = document.getElementById('cafeTamano');
+                const presentacionSelect = document.getElementById('cafePresentacion');
+
+                const tamanoOption = tamanoSelect.options[tamanoSelect.selectedIndex];
+                const tamano = tamanoSelect.value;
+                const price = parseInt(tamanoOption.dataset.price);
+
+                const presentacion = presentacionSelect.value;
+                const presentacionText = presentacion === 'molido'
+                    ? langManager.translate('tienda.molido')
+                    : langManager.translate('tienda.grano');
+
+                const tamanoText = tamano === '2500' ? '2.5kg' : `${tamano}g`;
+                const name = `Café de Especialidad ${tamanoText} (${presentacionText})`;
+
+                this.addItem({ name, price });
+                this.showFeedback(e.target);
+            });
+        }
 
         // Checkout WhatsApp
         this.checkoutWhatsApp?.addEventListener('click', () => {

@@ -61,88 +61,38 @@
     <!-- Productos -->
     <section class="section section-dark" id="productos">
         <div class="container">
-            <!-- Categoría: Cafés -->
-            <div class="categoria-header reveal">
-                <h2 class="categoria-title" data-i18n="tienda.cafe.cat">Cafés de Especialidad</h2>
-                <p class="categoria-desc" data-i18n="tienda.cafe.cat.desc">Delicioso café de especialidad, cultivado en las majestuosas tierras de Jericó Antioquia. Lo puedes pedir según tu preferencia: molido o en grano. Envío incluido en Medellín y a nivel nacional.</p>
-            </div>
-
             <div class="cards-grid">
-                <article class="card reveal">
-                    <div class="card-img">
-                        <span class="card-badge">250g</span>
-                        <div class="card-img-inner">
-                            <span class="card-img-text">Antioquia</span>
-                        </div>
+                <article class="card card-cafe card-featured reveal" id="cafeEspecialidad">
+                    <div class="card-img" style="background-image: url('img/cafes.png');">
+                        <span class="card-badge card-badge-star" data-i18n="tienda.producto.estrella">Producto estrella</span>
                     </div>
                     <div class="card-body">
-                        <h3 class="card-title" data-i18n="tienda.cafe.250.title">Café Antioquia 250g</h3>
-                        <p class="card-desc" data-i18n="tienda.cafe.250.desc">Café de especialidad cultivado en Jericó. Disponible molido o en grano según tu preferencia.</p>
+                        <h3 class="card-title" data-i18n="tienda.cafe.title">Café de Especialidad</h3>
+                        <p class="card-desc" data-i18n="tienda.cafe.cat.desc">Delicioso café de especialidad, cultivado en las majestuosas tierras de Antioquia. Lo puedes pedir según tu preferencia: molido o en grano. Envío no incluido.</p>
+                        <div class="card-selects-row">
+                            <div class="card-select-group">
+                                <label data-i18n="tienda.tamano">Tamaño</label>
+                                <select class="cafe-tamano" id="cafeTamano">
+                                    <option value="250" data-price="35000">250g</option>
+                                    <option value="340" data-price="45000">340g</option>
+                                    <option value="500" data-price="60000">500g</option>
+                                    <option value="2500" data-price="220000">2.5kg</option>
+                                </select>
+                            </div>
+                            <div class="card-select-group">
+                                <label data-i18n="tienda.presentacion">Presentación</label>
+                                <select class="cafe-presentacion" id="cafePresentacion">
+                                    <option value="molido" data-i18n="tienda.molido">Molido</option>
+                                    <option value="grano" data-i18n="tienda.grano">En grano</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="card-footer">
-                            <span class="card-price">$35.000</span>
-                            <button class="btn-card add-to-cart" data-name="Café Antioquia 250g" data-price="35000" data-i18n="tienda.btn.agregar">Agregar</button>
+                            <span class="card-price" id="cafePrice">$35.000</span>
+                            <button class="btn-card" id="addCafeToCart" data-i18n="tienda.btn.agregar">Agregar</button>
                         </div>
                     </div>
                 </article>
-
-                <article class="card reveal">
-                    <div class="card-img">
-                        <span class="card-badge">340g</span>
-                        <div class="card-img-inner">
-                            <span class="card-img-text">Antioquia</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title" data-i18n="tienda.cafe.340.title">Café Antioquia 340g</h3>
-                        <p class="card-desc" data-i18n="tienda.cafe.340.desc">Café de especialidad cultivado en Jericó. Disponible molido o en grano según tu preferencia.</p>
-                        <div class="card-footer">
-                            <span class="card-price">$45.000</span>
-                            <button class="btn-card add-to-cart" data-name="Café Antioquia 340g" data-price="45000" data-i18n="tienda.btn.agregar">Agregar</button>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="card reveal">
-                    <div class="card-img">
-                        <span class="card-badge">500g</span>
-                        <div class="card-img-inner">
-                            <span class="card-img-text">Antioquia</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title" data-i18n="tienda.cafe.500.title">Café Antioquia 500g</h3>
-                        <p class="card-desc" data-i18n="tienda.cafe.500.desc">Café de especialidad cultivado en Jericó. Disponible molido o en grano según tu preferencia.</p>
-                        <div class="card-footer">
-                            <span class="card-price">$60.000</span>
-                            <button class="btn-card add-to-cart" data-name="Café Antioquia 500g" data-price="60000" data-i18n="tienda.btn.agregar">Agregar</button>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="card reveal">
-                    <div class="card-img">
-                        <span class="card-badge">2.5kg</span>
-                        <div class="card-img-inner">
-                            <span class="card-img-text">Antioquia</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h3 class="card-title" data-i18n="tienda.cafe.2500.title">Café Antioquia 2500g</h3>
-                        <p class="card-desc" data-i18n="tienda.cafe.2500.desc">Café de especialidad cultivado en Jericó. Disponible molido o en grano según tu preferencia. Ideal para distribuidores.</p>
-                        <div class="card-footer">
-                            <span class="card-price">$220.000</span>
-                            <button class="btn-card add-to-cart" data-name="Café Antioquia 2500g" data-price="220000" data-i18n="tienda.btn.agregar">Agregar</button>
-                        </div>
-                    </div>
-                </article>
-            </div>
-
-            <!-- Categoría: Dulces -->
-            <div class="categoria-header reveal" style="margin-top: 5rem;">
-                <h2 class="categoria-title" data-i18n="tienda.dulces.cat">Dulces de Café</h2>
-            </div>
-
-            <div class="cards-grid">
                 <article class="card reveal">
                     <div class="card-img" style="background-image: url('img/imgProductos/AlfajorCafe.png');">
                     </div>
@@ -196,26 +146,6 @@
                 </article>
             </div>
 
-<!-- Banner Próximamente -->
-            <div class="coming-soon-banner reveal" style="margin-top: 5rem;">
-                <div class="coming-soon-content">
-                    <span class="coming-soon-tag" data-i18n="tienda.coming.badge">Próximamente</span>
-                    <h2 class="coming-soon-title" data-i18n="tienda.coming.title">Deiiwo Coffee</h2>
-                    <p class="coming-soon-edition" data-i18n="tienda.coming.subtitle">Edición Quindío</p>
-                    <p class="coming-soon-desc" data-i18n="tienda.coming.desc">Una experiencia única desde el corazón del Eje Cafetero. Granos cultivados a más de 1.800 metros de altura con sabores que cuentan la historia de nuestra tierra.</p>
-                </div>
-                <div class="coming-soon-decoration">
-                    <svg class="deco-palm" viewBox="0 0 100 100" fill="currentColor">
-                        <path d="M50 95 C48 80, 48 65, 48 50 L52 50 C52 65, 52 80, 50 95 Z"/>
-                        <path d="M50 50 C30 40, 15 35, 5 30 C20 38, 35 42, 50 45 Z"/>
-                        <path d="M50 50 C70 40, 85 35, 95 30 C80 38, 65 42, 50 45 Z"/>
-                        <path d="M50 50 C45 25, 42 10, 40 0 C44 15, 47 30, 50 45 Z"/>
-                        <path d="M50 50 C55 25, 58 10, 60 0 C56 15, 53 30, 50 45 Z"/>
-                        <path d="M50 50 C35 35, 25 25, 10 15 C25 28, 38 38, 50 45 Z"/>
-                        <path d="M50 50 C65 35, 75 25, 90 15 C75 28, 62 38, 50 45 Z"/>
-                    </svg>
-                </div>
-            </div>
         </div>
     </section>
 
