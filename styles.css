@@ -1102,6 +1102,42 @@ button { font-family: inherit; cursor: pointer; }
     transition: all 0.4s var(--ease);
     position: relative;
     overflow: hidden;
+    min-height: 280px;
+}
+
+/* Imagen de fondo */
+.exp-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity 0.5s var(--ease);
+    z-index: 1;
+}
+
+.exp-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.6) 50%,
+        rgba(0, 0, 0, 0.85) 100%
+    );
+}
+
+.exp-card:hover .exp-bg {
+    opacity: 1;
+}
+
+/* Contenido de la tarjeta */
+.exp-content {
+    position: relative;
+    z-index: 2;
+    transition: all 0.4s var(--ease);
 }
 
 .exp-card::after {
@@ -1115,16 +1151,37 @@ button { font-family: inherit; cursor: pointer; }
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.5s var(--ease);
+    z-index: 3;
 }
 
 .exp-card:hover {
     transform: translateY(-6px);
     border-color: var(--black);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
 }
 
 .exp-card:hover::after {
     transform: scaleX(1);
+    background: var(--white);
+}
+
+/* Cambios de color en hover */
+.exp-card:hover .exp-title {
+    color: var(--white);
+}
+
+.exp-card:hover .exp-desc {
+    color: var(--gray-1);
+}
+
+.exp-card:hover .exp-icon {
+    background: var(--white);
+    transform: scale(1.05);
+}
+
+.exp-card:hover .exp-icon svg {
+    color: var(--black);
+    transform: scale(1.1);
 }
 
 .exp-featured {
@@ -1152,15 +1209,7 @@ button { font-family: inherit; cursor: pointer; }
     width: 28px;
     height: 28px;
     color: var(--white);
-    transition: transform 0.3s var(--ease);
-}
-
-.exp-card:hover .exp-icon {
-    transform: scale(1.05);
-}
-
-.exp-card:hover .exp-icon svg {
-    transform: scale(1.1);
+    transition: all 0.3s var(--ease);
 }
 
 .exp-number {
@@ -1173,7 +1222,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .exp-card:hover .exp-number {
-    color: rgba(0, 0, 0, 0.12);
+    color: rgba(255, 255, 255, 0.15);
 }
 
 .exp-title {
@@ -1181,6 +1230,7 @@ button { font-family: inherit; cursor: pointer; }
     font-size: 1.4rem;
     margin-bottom: 0.75rem;
     color: var(--black);
+    transition: color 0.4s var(--ease);
 }
 
 .exp-desc {
@@ -1188,6 +1238,7 @@ button { font-family: inherit; cursor: pointer; }
     color: var(--gray-3);
     line-height: 1.8;
     margin-bottom: 1.5rem;
+    transition: color 0.4s var(--ease);
 }
 
 .exp-meta {
@@ -1199,6 +1250,38 @@ button { font-family: inherit; cursor: pointer; }
     padding: 0.4rem 1rem;
     border: 1px solid var(--gray-1);
     border-radius: 100px;
+}
+
+/* Mobile: mostrar imagen con tap/touch */
+@media (max-width: 768px) {
+    .exp-card {
+        min-height: 300px;
+    }
+
+    .exp-card.active .exp-bg {
+        opacity: 1;
+    }
+
+    .exp-card.active .exp-title {
+        color: var(--white);
+    }
+
+    .exp-card.active .exp-desc {
+        color: var(--gray-1);
+    }
+
+    .exp-card.active .exp-icon {
+        background: var(--white);
+    }
+
+    .exp-card.active .exp-icon svg {
+        color: var(--black);
+    }
+
+    .exp-card.active::after {
+        transform: scaleX(1);
+        background: var(--white);
+    }
 }
 
 /* ===================================

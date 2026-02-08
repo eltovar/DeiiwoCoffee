@@ -574,3 +574,51 @@ class ShoppingCart {
 
 // Inicializar carrito
 const cart = new ShoppingCart();
+
+// ===================================
+// EXPERIENCIAS - IMAGEN DE FONDO HOVER
+// ===================================
+function initExpCards() {
+    const expCards = document.querySelectorAll('.exp-card[data-bg]');
+
+    expCards.forEach(card => {
+        const bgElement = card.querySelector('.exp-bg');
+        const bgImage = card.getAttribute('data-bg');
+
+        if (bgElement && bgImage) {
+            // Establecer la imagen de fondo
+            bgElement.style.backgroundImage = `url('${bgImage}')`;
+
+            // Para dispositivos móviles: toggle con tap
+            card.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    // Remover clase active de otras tarjetas
+                    expCards.forEach(otherCard => {
+                        if (otherCard !== card) {
+                            otherCard.classList.remove('active');
+                        }
+                    });
+                    // Toggle en la tarjeta actual
+                    card.classList.toggle('active');
+                }
+            });
+        }
+    });
+
+    // Cerrar tarjetas al hacer click fuera (móvil)
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768) {
+            const clickedCard = e.target.closest('.exp-card');
+            if (!clickedCard) {
+                expCards.forEach(card => card.classList.remove('active'));
+            }
+        }
+    });
+}
+
+// Inicializar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initExpCards);
+} else {
+    initExpCards();
+}

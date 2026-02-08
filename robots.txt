@@ -1,0 +1,11 @@
+# Robots.txt para Deiiwo Coffee
+# https://deiiwocoffee.com
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: sitemap.xml
+
+# Bloquear archivos innecesarios para bots
+Disallow: /*.ps1$

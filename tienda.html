@@ -3,12 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Deiiwo Coffee - Tienda de productos de café colombiano">
-    <title>Tienda | Deiiwo Coffee</title>
+    <meta name="description" content="Tienda Deiiwo Coffee - Café de especialidad colombiano, alfajores, dulces artesanales y más. Compra online y recibe en tu hogar.">
+    <meta name="keywords" content="comprar café colombiano, café de especialidad online, tienda café artesanal, Deiiwo Coffee tienda, alfajor de café, dulce de café">
+    <meta name="author" content="Deiiwo Coffee">
+    <meta name="robots" content="index, follow">
+    <title>Tienda | Deiiwo Coffee - Café de Especialidad Colombiano</title>
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="tienda.html">
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Tienda Deiiwo Coffee - Productos de Café Colombiano">
+    <meta property="og:description" content="Café de especialidad, alfajores, dulces artesanales y más. Compra online y recibe en tu hogar.">
+    <meta property="og:image" content="img/Logo.jpg">
+    <meta property="og:locale" content="es_CO">
+    <meta property="og:site_name" content="Deiiwo Coffee">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tienda Deiiwo Coffee - Productos de Café Colombiano">
+    <meta name="twitter:description" content="Café de especialidad, alfajores, dulces artesanales y más. Compra online.">
+    <meta name="twitter:image" content="img/Logo.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="img/Logo.jpg">
+    <link rel="apple-touch-icon" href="img/Logo.jpg">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+
+    <!-- JSON-LD Schema.org - Product Catalog -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Productos Deiiwo Coffee",
+        "description": "Catálogo de productos de café de especialidad colombiano",
+        "numberOfItems": 5,
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "item": {
+                    "@type": "Product",
+                    "name": "Café de Especialidad Deiiwo",
+                    "description": "Café de especialidad colombiano, tostado artesanal con notas a chocolate, frutos rojos y caramelo",
+                    "brand": {"@type": "Brand", "name": "Deiiwo Coffee"},
+                    "image": "img/imgProductos/Cafe de Especialidad.jpg",
+                    "offers": {
+                        "@type": "AggregateOffer",
+                        "lowPrice": "35000",
+                        "highPrice": "180000",
+                        "priceCurrency": "COP",
+                        "availability": "https://schema.org/InStock"
+                    }
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "item": {
+                    "@type": "Product",
+                    "name": "Alfajor de Café",
+                    "description": "Alfajor artesanal con relleno de dulce de café",
+                    "brand": {"@type": "Brand", "name": "Deiiwo Coffee"},
+                    "image": "img/imgProductos/AlfajorCafe.png",
+                    "offers": {
+                        "@type": "Offer",
+                        "price": "25000",
+                        "priceCurrency": "COP",
+                        "availability": "https://schema.org/InStock"
+                    }
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "item": {
+                    "@type": "Product",
+                    "name": "Dulce de Café",
+                    "description": "Dulce artesanal de café colombiano",
+                    "brand": {"@type": "Brand", "name": "Deiiwo Coffee"},
+                    "image": "img/imgProductos/DulceCafe.png",
+                    "offers": {
+                        "@type": "Offer",
+                        "price": "15000",
+                        "priceCurrency": "COP",
+                        "availability": "https://schema.org/InStock"
+                    }
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 4,
+                "item": {
+                    "@type": "Product",
+                    "name": "Coffee Cherries",
+                    "description": "Cerezas de café deshidratadas",
+                    "brand": {"@type": "Brand", "name": "Deiiwo Coffee"},
+                    "image": "img/imgProductos/CoffeeCherries.png",
+                    "offers": {
+                        "@type": "Offer",
+                        "price": "20000",
+                        "priceCurrency": "COP",
+                        "availability": "https://schema.org/InStock"
+                    }
+                }
+            },
+            {
+                "@type": "ListItem",
+                "position": 5,
+                "item": {
+                    "@type": "Product",
+                    "name": "Panchitos",
+                    "description": "Snack artesanal de café",
+                    "brand": {"@type": "Brand", "name": "Deiiwo Coffee"},
+                    "image": "img/imgProductos/panchitos.png",
+                    "offers": {
+                        "@type": "Offer",
+                        "price": "25000",
+                        "priceCurrency": "COP",
+                        "availability": "https://schema.org/InStock"
+                    }
+                }
+            }
+        ]
+    }
+    </script>
 </head>
 <body>
     <!-- Cursor -->
@@ -63,7 +187,7 @@
         <div class="container">
             <div class="cards-grid">
                 <article class="card card-cafe card-featured reveal" id="cafeEspecialidad">
-                    <div class="card-img" style="background-image: url('img/cafes.png');">
+                    <div class="card-img" style="background-image: url('img/cafes.png');" role="img" aria-label="Café de Especialidad Deiiwo - Bolsas de café colombiano tostado artesanal">
                         <span class="card-badge card-badge-star" data-i18n="tienda.producto.estrella">Producto estrella</span>
                     </div>
                     <div class="card-body">
@@ -94,7 +218,7 @@
                     </div>
                 </article>
                 <article class="card reveal">
-                    <div class="card-img" style="background-image: url('img/imgProductos/AlfajorCafe.png');">
+                    <div class="card-img" style="background-image: url('img/imgProductos/AlfajorCafe.png');" role="img" aria-label="Alfajor de Café - Galleta artesanal cubierta de chocolate con sabor a café">
                     </div>
                     <div class="card-body">
                         <h3 class="card-title" data-i18n="tienda.alfajor.title">Alfajor de Café</h3>
@@ -107,7 +231,7 @@
                 </article>
 
                 <article class="card reveal">
-                    <div class="card-img" style="background-image: url('img/imgProductos/DulceCafe.png');">
+                    <div class="card-img" style="background-image: url('img/imgProductos/DulceCafe.png');" role="img" aria-label="Dulce de Café - Caramelo artesanal infundido con extracto de café">
                     </div>
                     <div class="card-body">
                         <h3 class="card-title" data-i18n="tienda.dulce.title">Dulce de Café</h3>
@@ -120,7 +244,7 @@
                 </article>
 
                 <article class="card reveal">
-                    <div class="card-img" style="background-image: url('img/imgProductos/CoffeeCherries.png');">
+                    <div class="card-img" style="background-image: url('img/imgProductos/CoffeeCherries.png');" role="img" aria-label="Coffee Cherries - Mermelada premium hecha con cereza de café">
                     </div>
                     <div class="card-body">
                         <h3 class="card-title" data-i18n="tienda.cherries.title">Coffee Cherries</h3>
@@ -133,7 +257,7 @@
                 </article>
 
                 <article class="card reveal">
-                    <div class="card-img" style="background-image: url('img/imgProductos/panchitos.png');">
+                    <div class="card-img" style="background-image: url('img/imgProductos/panchitos.png');" role="img" aria-label="Panchitos - Caramelo blando de leche con café y coco">
                     </div>
                     <div class="card-body">
                         <h3 class="card-title" data-i18n="tienda.panchitos.title">Panchitos</h3>
