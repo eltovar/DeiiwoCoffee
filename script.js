@@ -141,6 +141,15 @@ document.addEventListener('click', (e) => {
 });
 
 // ===================================
+// FUNCIÓN DE SEGURIDAD - ESCAPAR HTML
+// ===================================
+function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// ===================================
 // SMOOTH SCROLL
 // ===================================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -402,9 +411,35 @@ class ShoppingCart {
             });
         }
 
-        // Checkout WhatsApp
-        this.checkoutWhatsApp?.addEventListener('click', () => {
-            this.generateWhatsAppMessage();
+        // WhatsApp checkout button
+        this.checkoutWhatsApp?.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (this.items.length === 0) {
+                alert('Tu carrito está vacío');
+                return;
+            }
+
+            const message = this.items.map(item =>
+                `• ${item.name} x${item.quantity} - $${(item.price * item.quantity).toLocaleString()}`
+            ).join('\n');
+
+            const total = this.getTotal();
+            const whatsappMessage = encodeURIComponent(
+                `¡Hola! Quiero hacer el siguiente pedido:\n\n${message}\n\n*Total: $${total.toLocaleString()} COP*\n\n¿Cuál sería el costo de envío?`
+            );
+
+            window.open(`https://wa.me/573022199112?text=${whatsappMessage}`, '_blank');
+        });
+
+        // Bold checkout button
+        const checkoutBold = document.getElementById('checkoutBold');
+        checkoutBold?.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (this.items.length === 0) {
+                alert('Tu carrito está vacío');
+                return;
+            }
+            checkout.open();
         });
     }
 
@@ -497,15 +532,15 @@ class ShoppingCart {
         this.cartItems.innerHTML = this.items.map(item => `
             <div class="cart-item">
                 <div class="cart-item-info">
-                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-name">${escapeHTML(item.name)}</div>
                     <div class="cart-item-price">${this.formatPrice(item.price)} ${unitText}</div>
                     <div class="cart-item-actions">
-                        <button class="qty-btn" onclick="cart.updateQuantity('${item.name}', -1)">-</button>
+                        <button class="qty-btn" onclick="cart.updateQuantity('${escapeHTML(item.name)}', -1)">-</button>
                         <span class="qty-value">${item.quantity}</span>
-                        <button class="qty-btn" onclick="cart.updateQuantity('${item.name}', 1)">+</button>
+                        <button class="qty-btn" onclick="cart.updateQuantity('${escapeHTML(item.name)}', 1)">+</button>
                     </div>
                 </div>
-                <button class="cart-item-remove" onclick="cart.removeItem('${item.name}')" aria-label="Eliminar producto">
+                <button class="cart-item-remove" onclick="cart.removeItem('${escapeHTML(item.name)}')" aria-label="Eliminar producto">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z"/>
                     </svg>
@@ -567,13 +602,406 @@ class ShoppingCart {
     }
 
     loadCart() {
-        const saved = localStorage.getItem('deiiwo_cart');
-        return saved ? JSON.parse(saved) : [];
+        try {
+            const saved = localStorage.getItem('deiiwo_cart');
+            if (!saved) return [];
+            const parsed = JSON.parse(saved);
+            if (!Array.isArray(parsed)) return [];
+            return parsed.filter(item =>
+                typeof item.name === 'string' &&
+                typeof item.price === 'number' &&
+                typeof item.quantity === 'number' &&
+                item.quantity > 0
+            );
+        } catch (e) {
+            console.error('Error loading cart:', e);
+            return [];
+        }
     }
 }
 
 // Inicializar carrito
 const cart = new ShoppingCart();
+
+// ===================================
+// CHECKOUT MANAGER
+// ===================================
+class CheckoutManager {
+    constructor(cart) {
+        this.cart = cart;
+        this.currentStep = 1;
+        this.envioCalculado = 0;
+        this.metodoEntrega = 'envio';
+
+        // Configuración de envío
+        this.CONFIG = {
+            direccion_origen: "Cl. 35 Sur #41-51, Zona 9, Envigado, Antioquia, Colombia",
+            precio_por_km: 1500,
+            tarifa_nacional: 30000,
+            minimo_envio_gratis: 100000,
+            ciudades_valle_aburra: [
+                'medellin', 'envigado', 'sabaneta', 'itagui', 'bello',
+                'copacabana', 'girardota', 'barbosa', 'caldas', 'la_estrella'
+            ],
+            openRouteServiceKey: 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImE1N2JjYTdjYjRlMjRlODI5YzIwNWYyMGViYmNjMzQzIiwiaCI6Im11cm11cjY0In0=',
+            coordenadas_origen: [-75.5906, 6.1684] // [lng, lat] para Envigado
+        };
+
+        this.init();
+    }
+
+    init() {
+        this.modal = document.getElementById('checkoutModal');
+        this.overlay = document.getElementById('checkoutOverlay');
+        this.closeBtn = document.getElementById('checkoutClose');
+        this.btnBack = document.getElementById('btnBack');
+        this.btnContinue = document.getElementById('btnContinue');
+        this.btnPagar = document.getElementById('btnPagar');
+
+        if (!this.modal) return;
+
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        // Cerrar modal
+        this.closeBtn?.addEventListener('click', () => this.close());
+        this.overlay?.addEventListener('click', () => this.close());
+
+        // Navegación
+        this.btnBack?.addEventListener('click', () => this.prevStep());
+        this.btnContinue?.addEventListener('click', () => this.nextStep());
+
+        // Método de entrega
+        document.querySelectorAll('input[name="metodoEntrega"]').forEach(radio => {
+            radio.addEventListener('change', (e) => this.onMetodoEntregaChange(e));
+        });
+
+        // Departamento/Ciudad
+        document.getElementById('departamento')?.addEventListener('change', (e) => {
+            this.onDepartamentoChange(e);
+        });
+
+        document.getElementById('ciudad')?.addEventListener('change', () => {
+            this.calcularEnvio();
+        });
+
+        // Toggle tabla de tarifas
+        const ratesToggle = document.getElementById('ratesToggle');
+        const ratesContainer = document.getElementById('ratesTableContainer');
+        ratesToggle?.addEventListener('click', () => {
+            ratesToggle.classList.toggle('active');
+            ratesContainer.classList.toggle('active');
+        });
+
+        // Botón pagar
+        this.btnPagar?.addEventListener('click', () => this.initBoldPayment());
+    }
+
+    open() {
+        console.log('🚀 Checkout modal opening...');
+        console.log('🛒 Cart at open:', this.cart);
+        console.log('📦 Items in cart:', this.cart.items);
+
+        this.currentStep = 1;
+        this.renderStep();
+        this.modal?.classList.add('active');
+        this.overlay?.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    close() {
+        this.modal?.classList.remove('active');
+        this.overlay?.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    prevStep() {
+        if (this.currentStep > 1) {
+            this.currentStep--;
+            this.renderStep();
+        }
+    }
+
+    nextStep() {
+        if (this.currentStep === 1) {
+            this.currentStep = 2;
+            this.renderStep();
+        } else if (this.currentStep === 2) {
+            if (this.validateForm()) {
+                this.showPayButton();
+            }
+        }
+    }
+
+    renderStep() {
+        console.log('📄 renderStep called, currentStep:', this.currentStep);
+
+        const step1 = document.getElementById('checkoutStep1');
+        const step2 = document.getElementById('checkoutStep2');
+
+        console.log('📍 Step1 found:', !!step1);
+        console.log('📍 Step2 found:', !!step2);
+
+        if (this.currentStep === 1) {
+            console.log('✅ Rendering Step 1 (Order Summary)');
+            step1.style.display = 'block';
+            step2.style.display = 'none';
+            this.btnBack.style.display = 'none';
+            this.btnContinue.style.display = 'block';
+            this.btnPagar.style.display = 'none';
+            this.renderItems();
+        } else {
+            console.log('✅ Rendering Step 2 (Shipping Form)');
+            step1.style.display = 'none';
+            step2.style.display = 'block';
+            this.btnBack.style.display = 'block';
+            this.btnContinue.style.display = 'block';
+            this.btnPagar.style.display = 'none';
+            this.updateCosts();
+        }
+    }
+
+    renderItems() {
+        console.log('🔍 renderItems called');
+        console.log('📦 Cart items:', this.cart.items);
+        console.log('💰 Cart total:', this.cart.getTotal());
+
+        const container = document.getElementById('checkoutItems');
+        const subtotalEl = document.getElementById('checkoutSubtotal');
+
+        console.log('📍 Container found:', !!container);
+        console.log('📍 SubtotalEl found:', !!subtotalEl);
+
+        if (!container) {
+            console.error('❌ Container #checkoutItems not found!');
+            return;
+        }
+
+        container.innerHTML = this.cart.items.map(item => `
+            <div class="checkout-item">
+                <span>${escapeHTML(item.name)} x${item.quantity}</span>
+                <span>${this.cart.formatPrice(item.price * item.quantity)}</span>
+            </div>
+        `).join('');
+
+        console.log('✅ Container innerHTML set:', container.innerHTML.length, 'characters');
+
+        if (subtotalEl) {
+            subtotalEl.textContent = this.cart.formatPrice(this.cart.getTotal());
+            console.log('✅ Subtotal set to:', subtotalEl.textContent);
+        }
+    }
+
+    onMetodoEntregaChange(e) {
+        this.metodoEntrega = e.target.value;
+        const direccionFields = document.getElementById('direccionFields');
+
+        if (this.metodoEntrega === 'retiro') {
+            direccionFields.style.display = 'none';
+            this.envioCalculado = 0;
+        } else {
+            direccionFields.style.display = 'block';
+            this.calcularEnvio();
+        }
+
+        this.updateCosts();
+    }
+
+    onDepartamentoChange(e) {
+        const ciudadSelect = document.getElementById('ciudad');
+        const valor = e.target.value;
+
+        ciudadSelect.innerHTML = '<option value="">Seleccionar...</option>';
+
+        if (valor === 'antioquia') {
+            const ciudades = [
+                { value: 'medellin', label: 'Medellín' },
+                { value: 'envigado', label: 'Envigado' },
+                { value: 'sabaneta', label: 'Sabaneta' },
+                { value: 'itagui', label: 'Itagüí' },
+                { value: 'bello', label: 'Bello' },
+                { value: 'copacabana', label: 'Copacabana' },
+                { value: 'la_estrella', label: 'La Estrella' },
+                { value: 'caldas', label: 'Caldas' },
+                { value: 'otro_antioquia', label: 'Otra ciudad de Antioquia' }
+            ];
+
+            ciudades.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.value;
+                option.textContent = c.label;
+                ciudadSelect.appendChild(option);
+            });
+        } else if (valor === 'otro') {
+            const option = document.createElement('option');
+            option.value = 'nacional';
+            option.textContent = 'Envío Nacional';
+            ciudadSelect.appendChild(option);
+        }
+
+        this.calcularEnvio();
+    }
+
+    calcularEnvio() {
+        const ciudad = document.getElementById('ciudad')?.value;
+        const subtotal = this.cart.getTotal();
+
+        if (!ciudad || this.metodoEntrega === 'retiro') {
+            this.envioCalculado = 0;
+            this.updateCosts();
+            return;
+        }
+
+        const esValleAburra = this.CONFIG.ciudades_valle_aburra.includes(ciudad);
+
+        // Envío gratis si supera mínimo y es Valle de Aburrá
+        if (subtotal >= this.CONFIG.minimo_envio_gratis && esValleAburra) {
+            this.envioCalculado = 0;
+        }
+        // Tarifa nacional
+        else if (!esValleAburra || ciudad === 'nacional' || ciudad === 'otro_antioquia') {
+            this.envioCalculado = this.CONFIG.tarifa_nacional;
+        }
+        // Cálculo por kilómetro (tabla predefinida)
+        else {
+            const distancias = {
+                'envigado': 0,
+                'sabaneta': 5,
+                'itagui': 6,
+                'la_estrella': 8,
+                'medellin': 10,
+                'caldas': 12,
+                'bello': 15,
+                'copacabana': 20
+            };
+
+            const km = distancias[ciudad] || 15;
+            this.envioCalculado = Math.ceil(km) * this.CONFIG.precio_por_km;
+        }
+
+        this.updateCosts();
+    }
+
+    updateCosts() {
+        const subtotalEl = document.getElementById('costSubtotal');
+        const envioEl = document.getElementById('costEnvio');
+        const totalEl = document.getElementById('costTotal');
+
+        const subtotal = this.cart.getTotal();
+        const total = subtotal + this.envioCalculado;
+
+        if (subtotalEl) subtotalEl.textContent = this.cart.formatPrice(subtotal);
+
+        if (envioEl) {
+            if (this.metodoEntrega === 'retiro') {
+                envioEl.innerHTML = '<span class="free-shipping-badge">GRATIS</span>';
+            } else if (this.envioCalculado === 0) {
+                envioEl.innerHTML = '<span class="free-shipping-badge">ENVÍO GRATIS</span>';
+            } else {
+                envioEl.textContent = this.cart.formatPrice(this.envioCalculado);
+            }
+        }
+
+        if (totalEl) totalEl.textContent = this.cart.formatPrice(total);
+    }
+
+    validateForm() {
+        const nombre = document.getElementById('nombre')?.value.trim();
+        const email = document.getElementById('email')?.value.trim();
+        const telefono = document.getElementById('telefono')?.value.trim();
+        const acepta = document.getElementById('aceptaTerminos')?.checked;
+
+        if (!nombre || !email || !telefono) {
+            alert('Por favor completa todos los campos requeridos.');
+            return false;
+        }
+
+        if (!acepta) {
+            alert('Debes aceptar los términos y condiciones.');
+            return false;
+        }
+
+        if (this.metodoEntrega === 'envio') {
+            const direccion = document.getElementById('direccion')?.value.trim();
+            const ciudad = document.getElementById('ciudad')?.value;
+
+            if (!direccion || !ciudad) {
+                alert('Por favor completa la dirección de envío.');
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    showPayButton() {
+        this.btnContinue.style.display = 'none';
+        this.btnPagar.style.display = 'block';
+    }
+
+    getOrderData() {
+        return {
+            orderId: 'DC-' + Date.now(),
+            amount: this.cart.getTotal() + this.envioCalculado,
+            currency: 'COP',
+            description: `Pedido Deiiwo Coffee - ${this.cart.getTotalItems()} productos`,
+            customer: {
+                nombre: document.getElementById('nombre')?.value,
+                email: document.getElementById('email')?.value,
+                telefono: document.getElementById('telefono')?.value
+            },
+            shipping: {
+                metodo: this.metodoEntrega,
+                direccion: document.getElementById('direccion')?.value || 'Retiro en tienda',
+                ciudad: document.getElementById('ciudad')?.value || 'Envigado',
+                indicaciones: document.getElementById('indicaciones')?.value || '',
+                costo: this.envioCalculado
+            },
+            items: this.cart.items,
+            subtotal: this.cart.getTotal()
+        };
+    }
+
+    initBoldPayment() {
+        const orderData = this.getOrderData();
+
+        // Verificar que BoldCheckout esté disponible
+        if (typeof BoldCheckout === 'undefined') {
+            alert('Error al cargar el sistema de pagos. Por favor recarga la página.');
+            return;
+        }
+
+        // Inicializar Bold con API Key pública
+        const checkout = new BoldCheckout({
+            orderId: orderData.orderId,
+            currency: orderData.currency,
+            amount: orderData.amount,
+            apiKey: '-OA3_-SARWimpjOAZqugRvhY2W_d3YhNsT0YF8m1uI1U',
+            description: orderData.description,
+            tax: 0,
+            redirectionUrl: window.location.origin + '/confirmacion.html',
+
+            // Metadatos del pedido
+            metadata: {
+                items: JSON.stringify(orderData.items),
+                subtotal: orderData.subtotal,
+                envio: orderData.shipping.costo,
+                cliente_nombre: orderData.customer.nombre,
+                cliente_email: orderData.customer.email,
+                cliente_telefono: orderData.customer.telefono,
+                direccion: orderData.shipping.direccion,
+                ciudad: orderData.shipping.ciudad,
+                indicaciones: orderData.shipping.indicaciones
+            }
+        });
+
+        checkout.open();
+    }
+}
+
+// Inicializar checkout manager
+const checkout = new CheckoutManager(cart);
 
 // ===================================
 // EXPERIENCIAS - IMAGEN DE FONDO HOVER
