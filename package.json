@@ -1,20 +1,26 @@
 {
-  "name": "deiiwocoffee-webhook",
+  "name": "deiiwo-coffee-server",
   "version": "1.0.0",
-  "description": "Webhook server para notificaciones de Bold.co",
+  "description": "Servidor web y webhook para Deiiwo Coffee con integración Bold.co",
   "main": "webhook-bold.js",
   "scripts": {
     "start": "node webhook-bold.js",
-    "dev": "nodemon webhook-bold.js"
+    "dev": "node webhook-bold.js"
   },
+  "keywords": [
+    "deiiwo",
+    "coffee",
+    "webhook",
+    "bold",
+    "payments"
+  ],
+  "author": "Deiiwo Coffee",
+  "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
     "nodemailer": "^6.9.7"
   },
-  "devDependencies": {
-    "nodemon": "^3.0.2"
-  },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=14.0.0"
   }
 }
