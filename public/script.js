@@ -833,6 +833,68 @@ class CheckoutManager {
                 option.textContent = c.label;
                 ciudadSelect.appendChild(option);
             });
+        } else if (valor === 'cundinamarca') {
+            const ciudades = [
+                { value: 'bogota', label: 'Bogotá' },
+                { value: 'soacha', label: 'Soacha' },
+                { value: 'chia', label: 'Chía' },
+                { value: 'zipaquira', label: 'Zipaquirá' },
+                { value: 'facatativa', label: 'Facatativá' },
+                { value: 'otro_cundinamarca', label: 'Otra ciudad de Cundinamarca' }
+            ];
+
+            ciudades.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.value;
+                option.textContent = c.label;
+                ciudadSelect.appendChild(option);
+            });
+        } else if (valor === 'valle') {
+            const ciudades = [
+                { value: 'cali', label: 'Cali' },
+                { value: 'palmira', label: 'Palmira' },
+                { value: 'buenaventura', label: 'Buenaventura' },
+                { value: 'tulua', label: 'Tuluá' },
+                { value: 'cartago', label: 'Cartago' },
+                { value: 'otro_valle', label: 'Otra ciudad del Valle' }
+            ];
+
+            ciudades.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.value;
+                option.textContent = c.label;
+                ciudadSelect.appendChild(option);
+            });
+        } else if (valor === 'atlantico') {
+            const ciudades = [
+                { value: 'barranquilla', label: 'Barranquilla' },
+                { value: 'soledad', label: 'Soledad' },
+                { value: 'malambo', label: 'Malambo' },
+                { value: 'sabanalarga', label: 'Sabanalarga' },
+                { value: 'otro_atlantico', label: 'Otra ciudad del Atlántico' }
+            ];
+
+            ciudades.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.value;
+                option.textContent = c.label;
+                ciudadSelect.appendChild(option);
+            });
+        } else if (valor === 'santander') {
+            const ciudades = [
+                { value: 'bucaramanga', label: 'Bucaramanga' },
+                { value: 'floridablanca', label: 'Floridablanca' },
+                { value: 'giron', label: 'Girón' },
+                { value: 'piedecuesta', label: 'Piedecuesta' },
+                { value: 'otro_santander', label: 'Otra ciudad de Santander' }
+            ];
+
+            ciudades.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.value;
+                option.textContent = c.label;
+                ciudadSelect.appendChild(option);
+            });
         } else if (valor === 'otro') {
             const option = document.createElement('option');
             option.value = 'nacional';
@@ -843,8 +905,67 @@ class CheckoutManager {
         this.calcularEnvio();
     }
 
-    calcularEnvio() {
+    async calcularDistanciaReal(direccionCompleta) {
+        try {
+            console.log('🔍 Geocodificando dirección:', direccionCompleta);
+
+            // 1. Geocodificar dirección del cliente
+            const geoUrl = `https://api.openrouteservice.org/geocode/search?` +
+                `api_key=${this.CONFIG.openRouteServiceKey}&` +
+                `text=${encodeURIComponent(direccionCompleta)}&` +
+                `boundary.country=CO&` +
+                `size=1`;
+
+            const geoResponse = await fetch(geoUrl);
+            const geoData = await geoResponse.json();
+
+            if (!geoData.features || geoData.features.length === 0) {
+                console.warn('⚠️ No se pudo geocodificar la dirección');
+                return null;
+            }
+
+            const [lngDestino, latDestino] = geoData.features[0].geometry.coordinates;
+            console.log('📍 Coordenadas destino:', { lat: latDestino, lng: lngDestino });
+
+            // 2. Calcular distancia real usando Matrix API
+            const matrixUrl = `https://api.openrouteservice.org/v2/matrix/driving-car`;
+
+            const matrixResponse = await fetch(matrixUrl, {
+                method: 'POST',
+                headers: {
+                    'Authorization': this.CONFIG.openRouteServiceKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    locations: [
+                        this.CONFIG.coordenadas_origen,  // [lng, lat] de tienda
+                        [lngDestino, latDestino]         // [lng, lat] de cliente
+                    ],
+                    metrics: ['distance'],
+                    units: 'km'
+                })
+            });
+
+            const matrixData = await matrixResponse.json();
+
+            if (matrixData.distances && matrixData.distances[0]) {
+                const distanciaKm = matrixData.distances[0][1]; // Distancia origen→destino
+                console.log('📏 Distancia calculada:', distanciaKm, 'km');
+                return distanciaKm;
+            }
+
+            console.warn('⚠️ No se pudo calcular distancia');
+            return null;
+
+        } catch (error) {
+            console.error('❌ Error calculando distancia real:', error);
+            return null;
+        }
+    }
+
+    async calcularEnvio() {
         const ciudad = document.getElementById('ciudad')?.value;
+        const direccion = document.getElementById('direccion')?.value;
         const subtotal = this.cart.getTotal();
 
         if (!ciudad || this.metodoEntrega === 'retiro') {
@@ -858,29 +979,70 @@ class CheckoutManager {
         // Envío gratis si supera mínimo y es Valle de Aburrá
         if (subtotal >= this.CONFIG.minimo_envio_gratis && esValleAburra) {
             this.envioCalculado = 0;
+            this.updateCosts();
+            return;
         }
-        // Tarifa nacional
-        else if (!esValleAburra || ciudad === 'nacional' || ciudad === 'otro_antioquia') {
+
+        // Tarifa nacional (fuera del Valle de Aburrá)
+        if (!esValleAburra || ciudad === 'nacional' || ciudad === 'otro_antioquia') {
             this.envioCalculado = this.CONFIG.tarifa_nacional;
-        }
-        // Cálculo por kilómetro (tabla predefinida)
-        else {
-            const distancias = {
-                'envigado': 0,
-                'sabaneta': 5,
-                'itagui': 6,
-                'la_estrella': 8,
-                'medellin': 10,
-                'caldas': 12,
-                'bello': 15,
-                'copacabana': 20
-            };
-
-            const km = distancias[ciudad] || 15;
-            this.envioCalculado = Math.ceil(km) * this.CONFIG.precio_por_km;
+            this.updateCosts();
+            return;
         }
 
+        // Intentar calcular con OpenRouteService API
+        if (direccion && this.CONFIG.openRouteServiceKey) {
+            this.setEnvioLoading(true);
+
+            const direccionCompleta = `${direccion}, ${this.getCiudadNombre(ciudad)}, Antioquia, Colombia`;
+            const distanciaReal = await this.calcularDistanciaReal(direccionCompleta);
+
+            this.setEnvioLoading(false);
+
+            if (distanciaReal !== null) {
+                // Usar distancia real de API
+                this.envioCalculado = Math.ceil(distanciaReal) * this.CONFIG.precio_por_km;
+                this.updateCosts();
+                return;
+            }
+        }
+
+        // Fallback: usar tabla predefinida si API falla
+        const distancias = {
+            'envigado': 0,
+            'sabaneta': 5,
+            'itagui': 6,
+            'la_estrella': 8,
+            'medellin': 10,
+            'caldas': 12,
+            'bello': 15,
+            'copacabana': 20
+        };
+
+        const km = distancias[ciudad] || 15;
+        this.envioCalculado = Math.ceil(km) * this.CONFIG.precio_por_km;
         this.updateCosts();
+    }
+
+    getCiudadNombre(codigoCiudad) {
+        const nombres = {
+            'medellin': 'Medellín',
+            'envigado': 'Envigado',
+            'sabaneta': 'Sabaneta',
+            'itagui': 'Itagüí',
+            'bello': 'Bello',
+            'copacabana': 'Copacabana',
+            'la_estrella': 'La Estrella',
+            'caldas': 'Caldas'
+        };
+        return nombres[codigoCiudad] || codigoCiudad;
+    }
+
+    setEnvioLoading(loading) {
+        const envioEl = document.getElementById('costEnvio');
+        if (envioEl && loading) {
+            envioEl.innerHTML = '<span class="loading-text">Calculando...</span>';
+        }
     }
 
     updateCosts() {
@@ -942,8 +1104,8 @@ class CheckoutManager {
 
     getOrderData() {
         return {
-            orderId: 'DC-' + Date.now(),
-            amount: this.cart.getTotal() + this.envioCalculado,
+            orderId: 'DC-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+            amount: Math.floor(this.cart.getTotal() + this.envioCalculado),
             currency: 'COP',
             description: `Pedido Deiiwo Coffee - ${this.cart.getTotalItems()} productos`,
             customer: {
