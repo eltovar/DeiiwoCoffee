@@ -1,8 +1,15 @@
-# Sistema de Logs y Debug - Deiiwo Coffee
+# Logging & Debug System - Deiiwo Coffee
 
-## 🔍 Descripción
+## 🔍 Description
 
-El sistema de logs está implementado en `public/script.js` y registra automáticamente todos los eventos importantes del flujo de compra, desde que el usuario agrega productos al carrito hasta que completa el pago con Bold.co.
+The logging system is implemented in `public/script.js` and automatically records all important events in the purchase flow, from when the user adds products to the cart until they complete payment with Bold.co.
+
+**Console Commands (English):**
+- `showLogs()` - Display all logs
+- `showLogs("ERROR")` - Filter by level
+- `getLastLogs(10)` - Show last N logs
+- `exportLogs()` - Download logs as JSON
+- `clearLogs()` - Clear all logs
 
 ## 📊 Niveles de Log
 
@@ -12,70 +19,76 @@ El sistema de logs está implementado en `public/script.js` y registra automáti
 - **ERROR** ❌ - Errores que impiden una operación (ej: "BoldCheckout SDK no cargado")
 - **SUCCESS** ✅ - Confirmación de operaciones exitosas (ej: "Modal abierto correctamente")
 
-## 🛠️ Funciones Disponibles en Consola
+## 🛠️ Available Console Commands
 
-Abre la consola del navegador (F12 o Ctrl+Shift+I) y usa estas funciones:
+Open the browser console (F12 or Ctrl+Shift+I) and use these commands:
 
-### 1. Ver todos los logs
+### 1. Show all logs
 ```javascript
-verLogs()
+showLogs()
 ```
-Muestra todos los logs en formato tabla.
+Displays all logs in table format.
 
-### 2. Ver logs por nivel
+### 2. Show logs by level
 ```javascript
-verLogs("ERROR")    // Solo errores
-verLogs("WARN")     // Solo advertencias
-verLogs("INFO")     // Solo info
-verLogs("DEBUG")    // Solo debug
-verLogs("SUCCESS")  // Solo éxitos
+showLogs("ERROR")    // Errors only
+showLogs("WARN")     // Warnings only
+showLogs("INFO")     // Info only
+showLogs("DEBUG")    // Debug only
+showLogs("SUCCESS")  // Success only
 ```
 
-### 3. Exportar logs a archivo JSON
+### 3. Get last N logs
 ```javascript
-exportarLogs()
+getLastLogs(10)   // Show last 10 logs
+getLastLogs(5)    // Show last 5 logs
 ```
-Descarga un archivo JSON con todos los logs. Útil para enviar al desarrollador cuando hay un problema.
 
-### 4. Limpiar logs
+### 4. Export logs to JSON file
 ```javascript
-limpiarLogs()
+exportLogs()
 ```
-Borra todos los logs almacenados en memoria.
+Downloads a JSON file with all logs. Useful to send to developer when there's an issue.
 
-### 5. Acceso programático
+### 5. Clear logs
 ```javascript
-logger.getLogs()      // Retorna array de logs
-logger.exportLogs()   // Retorna JSON string
+clearLogs()
+```
+Clears all logs stored in memory.
+
+### 6. Programmatic access
+```javascript
+logger.getLogs()      // Returns array of logs
+logger.exportLogs()   // Returns JSON string
 ```
 
 ## 🚨 Qué Hacer Cuando Algo Falla
 
-### Paso 1: Reproducir el error
-1. Abre la consola del navegador (F12)
-2. Limpia los logs: `limpiarLogs()`
-3. Reproduce el error (ej: intenta hacer un pago)
+### Step 1: Reproduce the error
+1. Open browser console (F12)
+2. Clear logs: `clearLogs()`
+3. Reproduce the error (e.g., try to make a payment)
 
-### Paso 2: Exportar logs
+### Step 2: Export logs
 ```javascript
-exportarLogs()
+exportLogs()
 ```
-Esto descargará un archivo `deiiwo-logs-YYYY-MM-DD-HH-MM-SS.json`
+This will download a file `deiiwo-logs-YYYY-MM-DD-HH-MM-SS.json`
 
-### Paso 3: Revisar errores en consola
+### Step 3: Review errors in console
 ```javascript
-verLogs("ERROR")
+showLogs("ERROR")
 ```
-Los errores aparecerán con:
-- **timestamp**: Hora exacta del error
-- **message**: Descripción del error
-- **data**: Información adicional (stack trace, datos relevantes)
+Errors will show:
+- **timestamp**: Exact time of the error
+- **message**: Error description
+- **data**: Additional information (stack trace, relevant data)
 
-### Paso 4: Revisar flujo completo
+### Step 4: Review complete flow
 ```javascript
-verLogs()
+showLogs()
 ```
-Ver todos los logs ayuda a entender qué pasó antes del error.
+Viewing all logs helps understand what happened before the error.
 
 ## 📝 Eventos Registrados
 
@@ -177,23 +190,26 @@ Los logs contienen:
 
 ## 🧪 Testing
 
-Para probar el sistema de logs:
+To test the logging system:
 
 ```javascript
-// 1. Limpiar logs
-limpiarLogs()
+// 1. Clear logs
+clearLogs()
 
-// 2. Agregar un producto al carrito
-// (desde la UI)
+// 2. Add a product to cart
+// (from the UI)
 
-// 3. Ir a checkout
-// (desde la UI)
+// 3. Go to checkout
+// (from the UI)
 
-// 4. Ver logs generados
-verLogs()
+// 4. View generated logs
+showLogs()
 
-// 5. Exportar logs
-exportarLogs()
+// 5. View last 10 logs
+getLastLogs(10)
+
+// 6. Export logs
+exportLogs()
 ```
 
 ## 📞 Soporte

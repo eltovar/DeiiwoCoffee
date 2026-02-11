@@ -1,4 +1,259 @@
 // ===================================
+// DEIIWO COFFEE - Logging & Debug System
+// IMPORTANTE: Este bloque debe ir al inicio de todo el archivo
+// ===================================
+class Logger {
+    constructor(prefix = 'DeiiwoCoffee') {
+        this.prefix = prefix;
+        this.logs = [];
+        this.maxLogs = 100;
+    }
+
+    _formatMessage(level, message, data = null) {
+        const timestamp = new Date().toISOString();
+        const logEntry = {
+            timestamp,
+            level,
+            message,
+            data
+        };
+
+        this.logs.push(logEntry);
+        if (this.logs.length > this.maxLogs) {
+            this.logs.shift();
+        }
+
+        return logEntry;
+    }
+
+    _getColor(level) {
+        const colors = {
+            INFO: 'color: #3498db',
+            DEBUG: 'color: #9b59b6',
+            WARN: 'color: #f1c40f; font-weight: bold',
+            ERROR: 'color: #e74c3c; font-weight: bold',
+            SUCCESS: 'color: #2ecc71; font-weight: bold'
+        };
+        return colors[level] || 'color: #000';
+    }
+
+    // MÉTODO FÁCIL: Notificación visual automática para errores
+    showVisualAlert(message, level = 'ERROR') {
+        const alertBox = document.createElement('div');
+        const colors = {
+            ERROR: '#e74c3c',
+            WARN: '#f1c40f',
+            INFO: '#3498db',
+            SUCCESS: '#2ecc71'
+        };
+
+        const icons = {
+            ERROR: '❌',
+            WARN: '⚠️',
+            INFO: 'ℹ️',
+            SUCCESS: '✅'
+        };
+
+        alertBox.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: ${colors[level]};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            z-index: 10000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            max-width: 400px;
+            animation: slideIn 0.3s ease-out;
+        `;
+
+        alertBox.innerHTML = `
+            <div style="display: flex; align-items: start; gap: 10px;">
+                <span style="font-size: 20px;">${icons[level]}</span>
+                <div>
+                    <strong>${level === 'ERROR' ? 'Error en Pago' : level}:</strong>
+                    <div style="margin-top: 5px; font-size: 14px;">${message}</div>
+                </div>
+            </div>
+        `;
+
+        // Agregar animación CSS si no existe
+        if (!document.getElementById('logger-keyframes')) {
+            const style = document.createElement('style');
+            style.id = 'logger-keyframes';
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        document.body.appendChild(alertBox);
+        setTimeout(() => {
+            alertBox.style.animation = 'slideIn 0.3s ease-out reverse';
+            setTimeout(() => alertBox.remove(), 300);
+        }, 5000);
+    }
+
+    info(message, data = null) {
+        const entry = this._formatMessage('INFO', message, data);
+        console.log(`%c[${this.prefix}] ℹ️ ${message}`, this._getColor('INFO'), data || '');
+    }
+
+    warn(message, data = null) {
+        const entry = this._formatMessage('WARN', message, data);
+        console.warn(`%c[${this.prefix}] ⚠️ ${message}`, this._getColor('WARN'), data || '');
+        // Mostrar alerta visual para warnings importantes
+        if (message.includes('API falló') || message.includes('Validación fallida')) {
+            this.showVisualAlert(message, 'WARN');
+        }
+    }
+
+    error(message, error = null) {
+        const errorData = error ? {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        } : null;
+
+        const entry = this._formatMessage('ERROR', message, errorData);
+        console.error(`%c[${this.prefix}] ❌ ${message}`, this._getColor('ERROR'), error || '');
+
+        // MÉTODO FÁCIL: Notificación visual automática para TODOS los errores
+        this.showVisualAlert(message, 'ERROR');
+    }
+
+    success(message, data = null) {
+        const entry = this._formatMessage('SUCCESS', message, data);
+        console.log(`%c[${this.prefix}] ✅ ${message}`, this._getColor('SUCCESS'), data || '');
+    }
+
+    debug(message, data = null) {
+        const entry = this._formatMessage('DEBUG', message, data);
+        console.log(`%c[${this.prefix}] 🔍 ${message}`, this._getColor('DEBUG'), data || '');
+    }
+
+    getLogs(filter = null) {
+        return filter ? this.logs.filter(l => l.level === filter.toUpperCase()) : this.logs;
+    }
+
+    exportLogs() {
+        return JSON.stringify(this.logs, null, 2);
+    }
+
+    clearLogs() {
+        this.logs = [];
+    }
+}
+
+// Inicializar logger inmediatamente
+const logger = new Logger('DeiiwoCoffee');
+
+// ===================================
+// GLOBAL DEBUG FUNCTIONS
+// ===================================
+
+// Export logs to JSON file
+window.exportLogs = function() {
+    const logs = logger.exportLogs();
+    const blob = new Blob([logs], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `deiiwo-logs-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    console.log('✅ Logs exported successfully');
+};
+
+// View logs in console
+window.showLogs = function(level = null) {
+    const logs = logger.getLogs();
+    if (level) {
+        const filtered = logs.filter(log => log.level === level.toUpperCase());
+        console.table(filtered);
+        return filtered;
+    }
+    console.table(logs);
+    return logs;
+};
+
+// Clear all logs
+window.clearLogs = function() {
+    logger.clearLogs();
+    console.log('✅ Logs cleared');
+};
+
+// Get last N logs
+window.getLastLogs = function(count = 10) {
+    const logs = logger.getLogs();
+    const last = logs.slice(-count);
+    console.table(last);
+    return last;
+};
+
+// Show help in console
+console.log('%c🔧 Deiiwo Coffee - Debug Tools', 'font-size: 16px; font-weight: bold; color: #22c55e;');
+console.log('%cAvailable commands:', 'font-size: 14px; font-weight: bold;');
+console.log('  • exportLogs() - Download all logs as JSON file');
+console.log('  • showLogs() - Display all logs in table format');
+console.log('  • showLogs("ERROR") - Display logs filtered by level (INFO, WARN, ERROR, SUCCESS, DEBUG)');
+console.log('  • getLastLogs(10) - Show last N logs (default: 10)');
+console.log('  • clearLogs() - Clear all stored logs');
+console.log('  • logger.getLogs() - Get logs array programmatically');
+console.log('');
+console.log('%cExample usage:', 'font-weight: bold;');
+console.log('  showLogs("ERROR")  → Show only errors');
+console.log('  getLastLogs(5)    → Show last 5 logs');
+console.log('  exportLogs()      → Download logs.json');
+
+// ===================================
+// MANEJADORES GLOBALES DE ERRORES
+// ===================================
+
+// Capturar errores no controlados
+window.addEventListener('error', (event) => {
+    logger.error('Error no controlado detectado', {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error: event.error
+    });
+});
+
+// Capturar promesas rechazadas no manejadas
+window.addEventListener('unhandledrejection', (event) => {
+    logger.error('Promesa rechazada no manejada', {
+        reason: event.reason,
+        promise: event.promise
+    });
+});
+
+// Advertencia antes de cerrar si hay un proceso en curso
+let procesoEnCurso = false;
+
+window.addEventListener('beforeunload', (event) => {
+    if (procesoEnCurso) {
+        event.preventDefault();
+        event.returnValue = '';
+        logger.warn('Usuario intentó cerrar página durante proceso de pago');
+    }
+});
+
+// ===================================
 // SISTEMA DE IDIOMAS (i18n)
 // ===================================
 class LanguageManager {
@@ -647,159 +902,6 @@ class ShoppingCart {
 const cart = new ShoppingCart();
 
 // ===================================
-// SISTEMA DE LOGS
-// ===================================
-class Logger {
-    constructor(prefix = 'DeiiwoCoffee') {
-        this.prefix = prefix;
-        this.logs = [];
-        this.maxLogs = 100; // Mantener últimos 100 logs
-    }
-
-    _formatMessage(level, message, data = null) {
-        const timestamp = new Date().toISOString();
-        const logEntry = {
-            timestamp,
-            level,
-            message,
-            data
-        };
-
-        this.logs.push(logEntry);
-        if (this.logs.length > this.maxLogs) {
-            this.logs.shift();
-        }
-
-        return logEntry;
-    }
-
-    info(message, data = null) {
-        const entry = this._formatMessage('INFO', message, data);
-        console.log(`[${this.prefix}] ℹ️ ${message}`, data || '');
-    }
-
-    warn(message, data = null) {
-        const entry = this._formatMessage('WARN', message, data);
-        console.warn(`[${this.prefix}] ⚠️ ${message}`, data || '');
-    }
-
-    error(message, error = null) {
-        const errorData = error ? {
-            message: error.message,
-            stack: error.stack,
-            name: error.name
-        } : null;
-
-        const entry = this._formatMessage('ERROR', message, errorData);
-        console.error(`[${this.prefix}] ❌ ${message}`, error || '');
-    }
-
-    success(message, data = null) {
-        const entry = this._formatMessage('SUCCESS', message, data);
-        console.log(`[${this.prefix}] ✅ ${message}`, data || '');
-    }
-
-    debug(message, data = null) {
-        const entry = this._formatMessage('DEBUG', message, data);
-        console.log(`[${this.prefix}] 🔍 ${message}`, data || '');
-    }
-
-    getLogs() {
-        return this.logs;
-    }
-
-    exportLogs() {
-        return JSON.stringify(this.logs, null, 2);
-    }
-
-    clearLogs() {
-        this.logs = [];
-    }
-}
-
-const logger = new Logger('DeiiwoCoffee');
-
-// ===================================
-// FUNCIONES GLOBALES DE DEBUG
-// ===================================
-
-// Función para exportar logs (disponible en consola)
-window.exportarLogs = function() {
-    const logs = logger.exportLogs();
-    const blob = new Blob([logs], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `deiiwo-logs-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    console.log('✅ Logs exportados exitosamente');
-};
-
-// Función para ver logs en consola
-window.verLogs = function(nivel = null) {
-    const logs = logger.getLogs();
-    if (nivel) {
-        const filtered = logs.filter(log => log.level === nivel.toUpperCase());
-        console.table(filtered);
-        return filtered;
-    }
-    console.table(logs);
-    return logs;
-};
-
-// Función para limpiar logs
-window.limpiarLogs = function() {
-    logger.clearLogs();
-    console.log('✅ Logs limpiados');
-};
-
-// Mostrar ayuda en consola
-console.log('%c🔧 Deiiwo Coffee - Debug Tools', 'font-size: 16px; font-weight: bold; color: #22c55e;');
-console.log('%cFunciones disponibles:', 'font-size: 14px; font-weight: bold;');
-console.log('  • exportarLogs() - Descarga todos los logs en formato JSON');
-console.log('  • verLogs() - Muestra todos los logs en tabla');
-console.log('  • verLogs("ERROR") - Muestra solo logs de un nivel específico (INFO, WARN, ERROR, SUCCESS, DEBUG)');
-console.log('  • limpiarLogs() - Limpia todos los logs almacenados');
-console.log('  • logger.getLogs() - Obtiene array de logs programáticamente');
-
-// ===================================
-// MANEJADORES GLOBALES DE ERRORES
-// ===================================
-
-// Capturar errores no controlados
-window.addEventListener('error', (event) => {
-    logger.error('Error no controlado detectado', {
-        message: event.message,
-        filename: event.filename,
-        lineno: event.lineno,
-        colno: event.colno,
-        error: event.error
-    });
-});
-
-// Capturar promesas rechazadas no manejadas
-window.addEventListener('unhandledrejection', (event) => {
-    logger.error('Promesa rechazada no manejada', {
-        reason: event.reason,
-        promise: event.promise
-    });
-});
-
-// Advertencia antes de cerrar si hay un proceso en curso
-let procesoEnCurso = false;
-
-window.addEventListener('beforeunload', (event) => {
-    if (procesoEnCurso) {
-        event.preventDefault();
-        event.returnValue = '';
-        logger.warn('Usuario intentó cerrar página durante proceso de pago');
-    }
-});
-
-// ===================================
 // CHECKOUT MANAGER
 // ===================================
 class CheckoutManager {
@@ -822,7 +924,7 @@ class CheckoutManager {
                 'copacabana', 'girardota', 'barbosa', 'caldas', 'la_estrella'
             ],
             openRouteServiceKey: 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImE1N2JjYTdjYjRlMjRlODI5YzIwNWYyMGViYmNjMzQzIiwiaCI6Im11cm11cjY0In0=',
-            coordenadas_origen: [-75.5906, 6.1684] // [lng, lat] para Envigado
+            coordenadas_origen: [-75.5859624, 6.1713705] // [lng, lat] Comfama Envigado - Cl. 35 Sur #41-51
         };
 
         try {
@@ -883,6 +985,15 @@ class CheckoutManager {
 
         document.getElementById('ciudad')?.addEventListener('change', () => {
             this.calcularEnvio();
+        });
+
+        // Campo de dirección - calcular cuando termine de escribir
+        let direccionTimeout;
+        document.getElementById('direccion')?.addEventListener('input', () => {
+            clearTimeout(direccionTimeout);
+            direccionTimeout = setTimeout(() => {
+                this.calcularEnvio();
+            }, 800); // Esperar 800ms después de que deje de escribir
         });
 
         // Toggle tabla de tarifas
@@ -1116,10 +1227,16 @@ class CheckoutManager {
 
         try {
             // 1. Geocodificar dirección del cliente
+            // Agregar región específica para mejorar precisión en Antioquia
             const geoUrl = `https://api.openrouteservice.org/geocode/search?` +
                 `api_key=${this.CONFIG.openRouteServiceKey}&` +
                 `text=${encodeURIComponent(direccionCompleta)}&` +
                 `boundary.country=CO&` +
+                `focus.point.lon=-75.56&` +  // Centro de Medellín/Envigado
+                `focus.point.lat=6.25&` +    // Para priorizar resultados cercanos
+                `boundary.circle.lon=-75.56&` + // Círculo de búsqueda
+                `boundary.circle.lat=6.25&` +
+                `boundary.circle.radius=50&` +  // Radio de 50 km desde Medellín
                 `size=1`;
 
             logger.debug('Llamando API de Geocodificación', { url: geoUrl.replace(this.CONFIG.openRouteServiceKey, 'API_KEY_HIDDEN') });
@@ -1163,7 +1280,16 @@ class CheckoutManager {
                 units: 'km'
             };
 
-            logger.debug('Llamando API de Matrix (distancias)', { requestBody });
+            logger.debug('Llamando API de Matrix (distancias)', {
+                origen: {
+                    coords: this.CONFIG.coordenadas_origen,
+                    direccion: this.CONFIG.direccion_origen
+                },
+                destino: {
+                    coords: [lngDestino, latDestino],
+                    direccion: direccionCompleta
+                }
+            });
 
             const matrixResponse = await fetch(matrixUrl, {
                 method: 'POST',
@@ -1206,7 +1332,7 @@ class CheckoutManager {
 
     async calcularEnvio() {
         const ciudad = document.getElementById('ciudad')?.value;
-        const direccion = document.getElementById('direccion')?.value;
+        const direccion = document.getElementById('direccion')?.value?.trim();
         const subtotal = this.cart.getTotal();
 
         logger.info('Calculando costo de envío', {
@@ -1216,26 +1342,25 @@ class CheckoutManager {
             metodoEntrega: this.metodoEntrega
         });
 
-        if (!ciudad || this.metodoEntrega === 'retiro') {
-            logger.info('Envío = $0 (retiro en tienda o ciudad no seleccionada)');
+        // Si es retiro en tienda, envío = $0
+        if (this.metodoEntrega === 'retiro') {
+            logger.info('Envío = $0 (retiro en tienda)');
             this.envioCalculado = 0;
+            this.updateCosts();
+            return;
+        }
+
+        // Si no hay ciudad, no calcular (mostrar mensaje de espera)
+        if (!ciudad) {
+            logger.debug('Esperando selección de ciudad');
+            this.envioCalculado = 0;
+            this.setEnvioPendiente('Selecciona una ciudad');
             this.updateCosts();
             return;
         }
 
         const esValleAburra = this.CONFIG.ciudades_valle_aburra.includes(ciudad);
         logger.debug('Verificación de zona', { ciudad, esValleAburra });
-
-        // Envío gratis si supera mínimo y es Valle de Aburrá
-        if (subtotal >= this.CONFIG.minimo_envio_gratis && esValleAburra) {
-            logger.success('Envío GRATIS aplicado', {
-                razon: 'Pedido >= $100,000 en Valle de Aburrá',
-                subtotal
-            });
-            this.envioCalculado = 0;
-            this.updateCosts();
-            return;
-        }
 
         // Tarifa nacional (fuera del Valle de Aburrá)
         if (!esValleAburra || ciudad === 'nacional' || ciudad === 'otro_antioquia') {
@@ -1248,8 +1373,28 @@ class CheckoutManager {
             return;
         }
 
-        // Intentar calcular con OpenRouteService API
-        if (direccion && this.CONFIG.openRouteServiceKey) {
+        // Valle de Aburrá: REQUIERE dirección completa para cálculo preciso
+        if (!direccion || direccion.length < 5) {
+            logger.debug('Esperando dirección completa para calcular envío');
+            this.envioCalculado = 0;
+            this.setEnvioPendiente('Ingresa tu dirección completa');
+            this.updateCosts();
+            return;
+        }
+
+        // Envío gratis si supera mínimo y es Valle de Aburrá
+        if (subtotal >= this.CONFIG.minimo_envio_gratis && esValleAburra) {
+            logger.success('Envío GRATIS aplicado', {
+                razon: 'Pedido >= $100,000 en Valle de Aburrá',
+                subtotal
+            });
+            this.envioCalculado = 0;
+            this.updateCosts();
+            return;
+        }
+
+        // Calcular con OpenRouteService API usando dirección completa
+        if (this.CONFIG.openRouteServiceKey) {
             this.setEnvioLoading(true);
 
             const direccionCompleta = `${direccion}, ${this.getCiudadNombre(ciudad)}, Antioquia, Colombia`;
@@ -1274,7 +1419,7 @@ class CheckoutManager {
             }
         }
 
-        // Fallback: usar tabla predefinida si API falla
+        // Fallback: usar tabla predefinida si API falla o no hay dirección
         const distancias = {
             'envigado': 0,
             'sabaneta': 5,
@@ -1317,6 +1462,13 @@ class CheckoutManager {
         const envioEl = document.getElementById('costEnvio');
         if (envioEl && loading) {
             envioEl.innerHTML = '<span class="loading-text">Calculando...</span>';
+        }
+    }
+
+    setEnvioPendiente(mensaje) {
+        const envioEl = document.getElementById('costEnvio');
+        if (envioEl) {
+            envioEl.innerHTML = `<span class="pending-text" style="color: #999; font-style: italic;">${mensaje}</span>`;
         }
     }
 
