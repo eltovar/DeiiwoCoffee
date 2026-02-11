@@ -604,17 +604,40 @@ class ShoppingCart {
     loadCart() {
         try {
             const saved = localStorage.getItem('deiiwo_cart');
-            if (!saved) return [];
+            if (!saved) {
+                logger.debug('No hay carrito guardado en localStorage');
+                return [];
+            }
+
             const parsed = JSON.parse(saved);
-            if (!Array.isArray(parsed)) return [];
-            return parsed.filter(item =>
+
+            if (!Array.isArray(parsed)) {
+                logger.warn('Carrito en localStorage no es un array', { type: typeof parsed });
+                return [];
+            }
+
+            const validItems = parsed.filter(item =>
                 typeof item.name === 'string' &&
                 typeof item.price === 'number' &&
                 typeof item.quantity === 'number' &&
                 item.quantity > 0
             );
-        } catch (e) {
-            console.error('Error loading cart:', e);
+
+            if (validItems.length !== parsed.length) {
+                logger.warn('Algunos items del carrito fueron filtrados por ser inválidos', {
+                    original: parsed.length,
+                    validos: validItems.length
+                });
+            }
+
+            logger.info('Carrito cargado desde localStorage', {
+                itemsCount: validItems.length,
+                total: validItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+            });
+
+            return validItems;
+        } catch (error) {
+            logger.error('Error al cargar carrito desde localStorage', error);
             return [];
         }
     }
@@ -624,10 +647,165 @@ class ShoppingCart {
 const cart = new ShoppingCart();
 
 // ===================================
+// SISTEMA DE LOGS
+// ===================================
+class Logger {
+    constructor(prefix = 'DeiiwoCoffee') {
+        this.prefix = prefix;
+        this.logs = [];
+        this.maxLogs = 100; // Mantener últimos 100 logs
+    }
+
+    _formatMessage(level, message, data = null) {
+        const timestamp = new Date().toISOString();
+        const logEntry = {
+            timestamp,
+            level,
+            message,
+            data
+        };
+
+        this.logs.push(logEntry);
+        if (this.logs.length > this.maxLogs) {
+            this.logs.shift();
+        }
+
+        return logEntry;
+    }
+
+    info(message, data = null) {
+        const entry = this._formatMessage('INFO', message, data);
+        console.log(`[${this.prefix}] ℹ️ ${message}`, data || '');
+    }
+
+    warn(message, data = null) {
+        const entry = this._formatMessage('WARN', message, data);
+        console.warn(`[${this.prefix}] ⚠️ ${message}`, data || '');
+    }
+
+    error(message, error = null) {
+        const errorData = error ? {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        } : null;
+
+        const entry = this._formatMessage('ERROR', message, errorData);
+        console.error(`[${this.prefix}] ❌ ${message}`, error || '');
+    }
+
+    success(message, data = null) {
+        const entry = this._formatMessage('SUCCESS', message, data);
+        console.log(`[${this.prefix}] ✅ ${message}`, data || '');
+    }
+
+    debug(message, data = null) {
+        const entry = this._formatMessage('DEBUG', message, data);
+        console.log(`[${this.prefix}] 🔍 ${message}`, data || '');
+    }
+
+    getLogs() {
+        return this.logs;
+    }
+
+    exportLogs() {
+        return JSON.stringify(this.logs, null, 2);
+    }
+
+    clearLogs() {
+        this.logs = [];
+    }
+}
+
+const logger = new Logger('DeiiwoCoffee');
+
+// ===================================
+// FUNCIONES GLOBALES DE DEBUG
+// ===================================
+
+// Función para exportar logs (disponible en consola)
+window.exportarLogs = function() {
+    const logs = logger.exportLogs();
+    const blob = new Blob([logs], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `deiiwo-logs-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    console.log('✅ Logs exportados exitosamente');
+};
+
+// Función para ver logs en consola
+window.verLogs = function(nivel = null) {
+    const logs = logger.getLogs();
+    if (nivel) {
+        const filtered = logs.filter(log => log.level === nivel.toUpperCase());
+        console.table(filtered);
+        return filtered;
+    }
+    console.table(logs);
+    return logs;
+};
+
+// Función para limpiar logs
+window.limpiarLogs = function() {
+    logger.clearLogs();
+    console.log('✅ Logs limpiados');
+};
+
+// Mostrar ayuda en consola
+console.log('%c🔧 Deiiwo Coffee - Debug Tools', 'font-size: 16px; font-weight: bold; color: #22c55e;');
+console.log('%cFunciones disponibles:', 'font-size: 14px; font-weight: bold;');
+console.log('  • exportarLogs() - Descarga todos los logs en formato JSON');
+console.log('  • verLogs() - Muestra todos los logs en tabla');
+console.log('  • verLogs("ERROR") - Muestra solo logs de un nivel específico (INFO, WARN, ERROR, SUCCESS, DEBUG)');
+console.log('  • limpiarLogs() - Limpia todos los logs almacenados');
+console.log('  • logger.getLogs() - Obtiene array de logs programáticamente');
+
+// ===================================
+// MANEJADORES GLOBALES DE ERRORES
+// ===================================
+
+// Capturar errores no controlados
+window.addEventListener('error', (event) => {
+    logger.error('Error no controlado detectado', {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error: event.error
+    });
+});
+
+// Capturar promesas rechazadas no manejadas
+window.addEventListener('unhandledrejection', (event) => {
+    logger.error('Promesa rechazada no manejada', {
+        reason: event.reason,
+        promise: event.promise
+    });
+});
+
+// Advertencia antes de cerrar si hay un proceso en curso
+let procesoEnCurso = false;
+
+window.addEventListener('beforeunload', (event) => {
+    if (procesoEnCurso) {
+        event.preventDefault();
+        event.returnValue = '';
+        logger.warn('Usuario intentó cerrar página durante proceso de pago');
+    }
+});
+
+// ===================================
 // CHECKOUT MANAGER
 // ===================================
 class CheckoutManager {
     constructor(cart) {
+        logger.info('Inicializando CheckoutManager', { cartItems: cart.items.length });
+
         this.cart = cart;
         this.currentStep = 1;
         this.envioCalculado = 0;
@@ -647,10 +825,17 @@ class CheckoutManager {
             coordenadas_origen: [-75.5906, 6.1684] // [lng, lat] para Envigado
         };
 
-        this.init();
+        try {
+            this.init();
+            logger.success('CheckoutManager inicializado correctamente');
+        } catch (error) {
+            logger.error('Error al inicializar CheckoutManager', error);
+        }
     }
 
     init() {
+        logger.debug('Buscando elementos del DOM para checkout');
+
         this.modal = document.getElementById('checkoutModal');
         this.overlay = document.getElementById('checkoutOverlay');
         this.closeBtn = document.getElementById('checkoutClose');
@@ -658,7 +843,21 @@ class CheckoutManager {
         this.btnContinue = document.getElementById('btnContinue');
         this.btnPagar = document.getElementById('btnPagar');
 
-        if (!this.modal) return;
+        const elementsFound = {
+            modal: !!this.modal,
+            overlay: !!this.overlay,
+            closeBtn: !!this.closeBtn,
+            btnBack: !!this.btnBack,
+            btnContinue: !!this.btnContinue,
+            btnPagar: !!this.btnPagar
+        };
+
+        logger.debug('Elementos del DOM encontrados', elementsFound);
+
+        if (!this.modal) {
+            logger.error('Modal de checkout no encontrado en el DOM');
+            return;
+        }
 
         this.bindEvents();
     }
@@ -699,15 +898,22 @@ class CheckoutManager {
     }
 
     open() {
-        console.log('🚀 Checkout modal opening...');
-        console.log('🛒 Cart at open:', this.cart);
-        console.log('📦 Items in cart:', this.cart.items);
+        logger.info('Abriendo modal de checkout', {
+            cartTotal: this.cart.getTotal(),
+            itemsCount: this.cart.items.length,
+            items: this.cart.items.map(i => ({ name: i.name, qty: i.quantity, price: i.price }))
+        });
 
-        this.currentStep = 1;
-        this.renderStep();
-        this.modal?.classList.add('active');
-        this.overlay?.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        try {
+            this.currentStep = 1;
+            this.renderStep();
+            this.modal?.classList.add('active');
+            this.overlay?.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            logger.success('Modal de checkout abierto correctamente');
+        } catch (error) {
+            logger.error('Error al abrir modal de checkout', error);
+        }
     }
 
     close() {
@@ -906,9 +1112,9 @@ class CheckoutManager {
     }
 
     async calcularDistanciaReal(direccionCompleta) {
-        try {
-            console.log('🔍 Geocodificando dirección:', direccionCompleta);
+        logger.info('Iniciando cálculo de distancia real', { direccion: direccionCompleta });
 
+        try {
             // 1. Geocodificar dirección del cliente
             const geoUrl = `https://api.openrouteservice.org/geocode/search?` +
                 `api_key=${this.CONFIG.openRouteServiceKey}&` +
@@ -916,19 +1122,48 @@ class CheckoutManager {
                 `boundary.country=CO&` +
                 `size=1`;
 
+            logger.debug('Llamando API de Geocodificación', { url: geoUrl.replace(this.CONFIG.openRouteServiceKey, 'API_KEY_HIDDEN') });
+
             const geoResponse = await fetch(geoUrl);
+
+            if (!geoResponse.ok) {
+                logger.error('Error en respuesta de geocodificación', {
+                    status: geoResponse.status,
+                    statusText: geoResponse.statusText
+                });
+                return null;
+            }
+
             const geoData = await geoResponse.json();
+            logger.debug('Respuesta de geocodificación recibida', {
+                featuresCount: geoData.features?.length || 0
+            });
 
             if (!geoData.features || geoData.features.length === 0) {
-                console.warn('⚠️ No se pudo geocodificar la dirección');
+                logger.warn('No se pudo geocodificar la dirección - sin resultados');
                 return null;
             }
 
             const [lngDestino, latDestino] = geoData.features[0].geometry.coordinates;
-            console.log('📍 Coordenadas destino:', { lat: latDestino, lng: lngDestino });
+            logger.success('Dirección geocodificada', {
+                lat: latDestino,
+                lng: lngDestino,
+                lugar: geoData.features[0].properties.label
+            });
 
             // 2. Calcular distancia real usando Matrix API
             const matrixUrl = `https://api.openrouteservice.org/v2/matrix/driving-car`;
+
+            const requestBody = {
+                locations: [
+                    this.CONFIG.coordenadas_origen,  // [lng, lat] de tienda
+                    [lngDestino, latDestino]         // [lng, lat] de cliente
+                ],
+                metrics: ['distance'],
+                units: 'km'
+            };
+
+            logger.debug('Llamando API de Matrix (distancias)', { requestBody });
 
             const matrixResponse = await fetch(matrixUrl, {
                 method: 'POST',
@@ -936,29 +1171,35 @@ class CheckoutManager {
                     'Authorization': this.CONFIG.openRouteServiceKey,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    locations: [
-                        this.CONFIG.coordenadas_origen,  // [lng, lat] de tienda
-                        [lngDestino, latDestino]         // [lng, lat] de cliente
-                    ],
-                    metrics: ['distance'],
-                    units: 'km'
-                })
+                body: JSON.stringify(requestBody)
             });
 
+            if (!matrixResponse.ok) {
+                logger.error('Error en respuesta de Matrix API', {
+                    status: matrixResponse.status,
+                    statusText: matrixResponse.statusText
+                });
+                return null;
+            }
+
             const matrixData = await matrixResponse.json();
+            logger.debug('Respuesta de Matrix API recibida', { matrixData });
 
             if (matrixData.distances && matrixData.distances[0]) {
                 const distanciaKm = matrixData.distances[0][1]; // Distancia origen→destino
-                console.log('📏 Distancia calculada:', distanciaKm, 'km');
+                logger.success('Distancia calculada exitosamente', {
+                    distanciaKm: distanciaKm,
+                    origen: this.CONFIG.direccion_origen,
+                    destino: direccionCompleta
+                });
                 return distanciaKm;
             }
 
-            console.warn('⚠️ No se pudo calcular distancia');
+            logger.warn('No se pudo calcular distancia - respuesta sin datos válidos');
             return null;
 
         } catch (error) {
-            console.error('❌ Error calculando distancia real:', error);
+            logger.error('Error en cálculo de distancia real', error);
             return null;
         }
     }
@@ -968,16 +1209,29 @@ class CheckoutManager {
         const direccion = document.getElementById('direccion')?.value;
         const subtotal = this.cart.getTotal();
 
+        logger.info('Calculando costo de envío', {
+            ciudad,
+            direccion: direccion ? direccion.substring(0, 30) + '...' : null,
+            subtotal,
+            metodoEntrega: this.metodoEntrega
+        });
+
         if (!ciudad || this.metodoEntrega === 'retiro') {
+            logger.info('Envío = $0 (retiro en tienda o ciudad no seleccionada)');
             this.envioCalculado = 0;
             this.updateCosts();
             return;
         }
 
         const esValleAburra = this.CONFIG.ciudades_valle_aburra.includes(ciudad);
+        logger.debug('Verificación de zona', { ciudad, esValleAburra });
 
         // Envío gratis si supera mínimo y es Valle de Aburrá
         if (subtotal >= this.CONFIG.minimo_envio_gratis && esValleAburra) {
+            logger.success('Envío GRATIS aplicado', {
+                razon: 'Pedido >= $100,000 en Valle de Aburrá',
+                subtotal
+            });
             this.envioCalculado = 0;
             this.updateCosts();
             return;
@@ -985,6 +1239,10 @@ class CheckoutManager {
 
         // Tarifa nacional (fuera del Valle de Aburrá)
         if (!esValleAburra || ciudad === 'nacional' || ciudad === 'otro_antioquia') {
+            logger.info('Aplicando tarifa nacional', {
+                ciudad,
+                tarifa: this.CONFIG.tarifa_nacional
+            });
             this.envioCalculado = this.CONFIG.tarifa_nacional;
             this.updateCosts();
             return;
@@ -995,6 +1253,8 @@ class CheckoutManager {
             this.setEnvioLoading(true);
 
             const direccionCompleta = `${direccion}, ${this.getCiudadNombre(ciudad)}, Antioquia, Colombia`;
+            logger.info('Intentando cálculo con API de OpenRouteService');
+
             const distanciaReal = await this.calcularDistanciaReal(direccionCompleta);
 
             this.setEnvioLoading(false);
@@ -1002,8 +1262,15 @@ class CheckoutManager {
             if (distanciaReal !== null) {
                 // Usar distancia real de API
                 this.envioCalculado = Math.ceil(distanciaReal) * this.CONFIG.precio_por_km;
+                logger.success('Costo de envío calculado con API', {
+                    distanciaKm: distanciaReal,
+                    precioPorKm: this.CONFIG.precio_por_km,
+                    costoTotal: this.envioCalculado
+                });
                 this.updateCosts();
                 return;
+            } else {
+                logger.warn('API falló, usando tabla predefinida como fallback');
             }
         }
 
@@ -1021,6 +1288,14 @@ class CheckoutManager {
 
         const km = distancias[ciudad] || 15;
         this.envioCalculado = Math.ceil(km) * this.CONFIG.precio_por_km;
+
+        logger.info('Costo de envío calculado con tabla predefinida', {
+            ciudad,
+            distanciaKm: km,
+            precioPorKm: this.CONFIG.precio_por_km,
+            costoTotal: this.envioCalculado
+        });
+
         this.updateCosts();
     }
 
@@ -1069,17 +1344,31 @@ class CheckoutManager {
     }
 
     validateForm() {
+        logger.info('Validando formulario de checkout');
+
         const nombre = document.getElementById('nombre')?.value.trim();
         const email = document.getElementById('email')?.value.trim();
         const telefono = document.getElementById('telefono')?.value.trim();
         const acepta = document.getElementById('aceptaTerminos')?.checked;
 
+        const formData = {
+            nombre: nombre || '(vacío)',
+            email: email || '(vacío)',
+            telefono: telefono || '(vacío)',
+            aceptaTerminos: acepta,
+            metodoEntrega: this.metodoEntrega
+        };
+
+        logger.debug('Datos del formulario', formData);
+
         if (!nombre || !email || !telefono) {
+            logger.warn('Validación fallida: campos requeridos vacíos', { nombre: !!nombre, email: !!email, telefono: !!telefono });
             alert('Por favor completa todos los campos requeridos.');
             return false;
         }
 
         if (!acepta) {
+            logger.warn('Validación fallida: términos y condiciones no aceptados');
             alert('Debes aceptar los términos y condiciones.');
             return false;
         }
@@ -1089,11 +1378,16 @@ class CheckoutManager {
             const ciudad = document.getElementById('ciudad')?.value;
 
             if (!direccion || !ciudad) {
+                logger.warn('Validación fallida: dirección de envío incompleta', { direccion: !!direccion, ciudad: !!ciudad });
                 alert('Por favor completa la dirección de envío.');
                 return false;
             }
+
+            formData.direccion = direccion;
+            formData.ciudad = ciudad;
         }
 
+        logger.success('Formulario validado correctamente', formData);
         return true;
     }
 
@@ -1103,9 +1397,23 @@ class CheckoutManager {
     }
 
     getOrderData() {
-        return {
-            orderId: 'DC-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
-            amount: Math.floor(this.cart.getTotal() + this.envioCalculado),
+        logger.debug('Generando datos de la orden');
+
+        const orderId = 'DC-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        const subtotal = this.cart.getTotal();
+        const amount = Math.floor(subtotal + this.envioCalculado);
+
+        logger.debug('OrderId generado', { orderId });
+        logger.debug('Montos calculados', {
+            subtotal,
+            envio: this.envioCalculado,
+            total: amount,
+            esEntero: Number.isInteger(amount)
+        });
+
+        const orderData = {
+            orderId: orderId,
+            amount: amount,
             currency: 'COP',
             description: `Pedido Deiiwo Coffee - ${this.cart.getTotalItems()} productos`,
             customer: {
@@ -1121,44 +1429,120 @@ class CheckoutManager {
                 costo: this.envioCalculado
             },
             items: this.cart.items,
-            subtotal: this.cart.getTotal()
+            subtotal: subtotal
         };
+
+        // Validación de integridad de datos
+        if (!orderData.customer.nombre || !orderData.customer.email || !orderData.customer.telefono) {
+            logger.error('Datos de cliente incompletos en orderData', orderData.customer);
+        }
+
+        if (orderData.amount <= 0) {
+            logger.error('Monto de orden inválido (<=0)', { amount: orderData.amount });
+        }
+
+        if (orderData.items.length === 0) {
+            logger.error('Orden sin items', { itemsCount: 0 });
+        }
+
+        logger.success('Datos de orden generados correctamente', {
+            orderId: orderData.orderId,
+            amount: orderData.amount,
+            itemsCount: orderData.items.length
+        });
+
+        return orderData;
     }
 
     initBoldPayment() {
+        logger.info('Iniciando proceso de pago con Bold.co');
+
         const orderData = this.getOrderData();
+
+        logger.debug('Datos de la orden generados', {
+            orderId: orderData.orderId,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            itemsCount: orderData.items.length,
+            subtotal: orderData.subtotal,
+            envio: orderData.shipping.costo,
+            customer: {
+                nombre: orderData.customer.nombre,
+                email: orderData.customer.email,
+                telefono: orderData.customer.telefono
+            },
+            shipping: {
+                metodo: orderData.shipping.metodo,
+                ciudad: orderData.shipping.ciudad
+            }
+        });
 
         // Verificar que BoldCheckout esté disponible
         if (typeof BoldCheckout === 'undefined') {
+            logger.error('BoldCheckout SDK no está cargado', {
+                razon: 'Script de Bold.co no se cargó correctamente',
+                solucion: 'Verificar que el script esté incluido en el HTML'
+            });
             alert('Error al cargar el sistema de pagos. Por favor recarga la página.');
             return;
         }
 
-        // Inicializar Bold con API Key pública
-        const checkout = new BoldCheckout({
-            orderId: orderData.orderId,
-            currency: orderData.currency,
-            amount: orderData.amount,
-            apiKey: '-OA3_-SARWimpjOAZqugRvhY2W_d3YhNsT0YF8m1uI1U',
-            description: orderData.description,
-            tax: 0,
-            redirectionUrl: window.location.origin + '/confirmacion.html',
+        logger.success('BoldCheckout SDK detectado correctamente');
 
-            // Metadatos del pedido
-            metadata: {
-                items: JSON.stringify(orderData.items),
-                subtotal: orderData.subtotal,
-                envio: orderData.shipping.costo,
-                cliente_nombre: orderData.customer.nombre,
-                cliente_email: orderData.customer.email,
-                cliente_telefono: orderData.customer.telefono,
-                direccion: orderData.shipping.direccion,
-                ciudad: orderData.shipping.ciudad,
-                indicaciones: orderData.shipping.indicaciones
-            }
-        });
+        try {
+            const redirectUrl = window.location.origin + '/confirmacion.html';
+            logger.debug('URL de redirección configurada', { redirectUrl });
 
-        checkout.open();
+            // Inicializar Bold con API Key pública
+            const boldConfig = {
+                orderId: orderData.orderId,
+                currency: orderData.currency,
+                amount: orderData.amount,
+                apiKey: '-OA3_-SARWimpjOAZqugRvhY2W_d3YhNsT0YF8m1uI1U',
+                description: orderData.description,
+                tax: 0,
+                redirectionUrl: redirectUrl,
+
+                // Metadatos del pedido
+                metadata: {
+                    items: JSON.stringify(orderData.items),
+                    subtotal: orderData.subtotal,
+                    envio: orderData.shipping.costo,
+                    cliente_nombre: orderData.customer.nombre,
+                    cliente_email: orderData.customer.email,
+                    cliente_telefono: orderData.customer.telefono,
+                    direccion: orderData.shipping.direccion,
+                    ciudad: orderData.shipping.ciudad,
+                    indicaciones: orderData.shipping.indicaciones
+                }
+            };
+
+            logger.info('Configuración de Bold preparada', {
+                orderId: boldConfig.orderId,
+                amount: boldConfig.amount,
+                metadataKeys: Object.keys(boldConfig.metadata)
+            });
+
+            const boldCheckout = new BoldCheckout(boldConfig);
+            logger.success('Instancia de BoldCheckout creada');
+
+            // Marcar proceso en curso
+            window.procesoEnCurso = true;
+            logger.debug('Proceso de pago marcado como EN CURSO');
+
+            logger.info('Abriendo modal de pago de Bold.co');
+            boldCheckout.open();
+
+            logger.success('Modal de Bold.co abierto exitosamente');
+
+            // El proceso terminará cuando el usuario complete o cancele el pago
+            // Bold redirigirá a confirmacion.html en caso de éxito
+
+        } catch (error) {
+            window.procesoEnCurso = false;
+            logger.error('Error al inicializar Bold.co', error);
+            alert('Error al iniciar el proceso de pago. Por favor intenta nuevamente.');
+        }
     }
 }
 
