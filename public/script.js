@@ -409,14 +409,29 @@ function escapeHTML(str) {
 // ===================================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', (e) => {
+        const href = anchor.getAttribute('href');
+
+        // Ignorar enlaces con solo '#' o href vacío
+        if (!href || href === '#' || href.length <= 1) {
+            logger.debug('Smooth scroll: enlace ignorado (href vacío o solo #)', { href });
+            return;
+        }
+
         e.preventDefault();
-        const target = document.querySelector(anchor.getAttribute('href'));
-        if (target) {
-            const offset = header.offsetHeight + 20;
-            window.scrollTo({
-                top: target.offsetTop - offset,
-                behavior: 'smooth'
-            });
+
+        try {
+            const target = document.querySelector(href);
+            if (target) {
+                const offset = header.offsetHeight + 20;
+                window.scrollTo({
+                    top: target.offsetTop - offset,
+                    behavior: 'smooth'
+                });
+            } else {
+                logger.debug('Smooth scroll: target no encontrado', { href });
+            }
+        } catch (error) {
+            logger.warn('Error en smooth scroll', { href, error: error.message });
         }
     });
 });
@@ -912,6 +927,7 @@ class CheckoutManager {
         this.currentStep = 1;
         this.envioCalculado = 0;
         this.metodoEntrega = 'envio';
+        this.isProcessingPayment = false; // Flag para prevenir doble ejecución
 
         // Configuración de envío
         this.CONFIG = {
@@ -1004,8 +1020,15 @@ class CheckoutManager {
             ratesContainer.classList.toggle('active');
         });
 
-        // Botón pagar
-        this.btnPagar?.addEventListener('click', () => this.initBoldPayment());
+        // Botón pagar - prevenir doble click
+        this.btnPagar?.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (this.isProcessingPayment) {
+                logger.warn('Pago ya en proceso, ignorando click duplicado');
+                return;
+            }
+            await this.initBoldPayment();
+        });
     }
 
     open() {
@@ -1606,7 +1629,61 @@ class CheckoutManager {
         return orderData;
     }
 
-    initBoldPayment() {
+    /**
+     * Inyectar dinámicamente el SDK de Bold si no está presente
+     * Esto resuelve problemas de carga del script desde el HTML
+     */
+    async injectBoldSDK() {
+        return new Promise((resolve) => {
+            // Ya está cargado
+            if (typeof BoldCheckout !== 'undefined') {
+                logger.success('BoldCheckout SDK ya está disponible');
+                return resolve(true);
+            }
+
+            logger.warn('SDK de Bold no encontrado. Iniciando inyección dinámica...');
+
+            // Crear elemento script y agregarlo al DOM
+            const script = document.createElement('script');
+            script.src = 'https://checkout.bold.co/library/bold.js';
+            script.async = true;
+
+            script.onload = () => {
+                logger.success('SDK de Bold inyectado y cargado exitosamente');
+                // Esperar un momento extra para asegurar que el objeto global esté disponible
+                setTimeout(() => resolve(true), 200);
+            };
+
+            script.onerror = () => {
+                logger.error('No se pudo cargar el script de Bold', {
+                    posiblesCausas: [
+                        'Bloqueador de anuncios activo',
+                        'Problema de conexión a internet',
+                        'URL de Bold.co no accesible',
+                        'CORS o firewall bloqueando el recurso'
+                    ],
+                    scriptUrl: 'https://checkout.bold.co/library/bold.js'
+                });
+                resolve(false);
+            };
+
+            logger.debug('Inyectando script de Bold en el DOM...', {
+                src: script.src,
+                async: script.async
+            });
+
+            document.head.appendChild(script);
+        });
+    }
+
+    async initBoldPayment() {
+        // Prevenir doble ejecución
+        if (this.isProcessingPayment) {
+            logger.warn('initBoldPayment llamado mientras ya hay un proceso en curso');
+            return;
+        }
+
+        this.isProcessingPayment = true;
         logger.info('Iniciando proceso de pago con Bold.co');
 
         const orderData = this.getOrderData();
@@ -1629,17 +1706,27 @@ class CheckoutManager {
             }
         });
 
-        // Verificar que BoldCheckout esté disponible
-        if (typeof BoldCheckout === 'undefined') {
-            logger.error('BoldCheckout SDK no está cargado', {
-                razon: 'Script de Bold.co no se cargó correctamente',
-                solucion: 'Verificar que el script esté incluido en el HTML'
-            });
-            alert('Error al cargar el sistema de pagos. Por favor recarga la página.');
+        // INYECCIÓN DINÁMICA: Intentar cargar el SDK si no está presente
+        const sdkLoaded = await this.injectBoldSDK();
+
+        if (!sdkLoaded) {
+            this.isProcessingPayment = false;
+            alert('Error al cargar el sistema de pagos de Bold.co. Por favor:\n\n1. Desactiva bloqueadores de anuncios\n2. Verifica tu conexión a internet\n3. Recarga la página\n\nSi el problema persiste, contacta a soporte.');
             return;
         }
 
-        logger.success('BoldCheckout SDK detectado correctamente');
+        // Verificación final después de la inyección
+        if (typeof BoldCheckout === 'undefined') {
+            logger.error('BoldCheckout SDK no disponible después de inyección', {
+                razon: 'El objeto BoldCheckout no se definió globalmente',
+                posibleCausa: 'Versión incompatible del SDK o problema en el script de Bold'
+            });
+            this.isProcessingPayment = false;
+            alert('Error técnico al inicializar Bold.co. Por favor recarga la página.');
+            return;
+        }
+
+        logger.success('BoldCheckout SDK confirmado y listo para usar')
 
         try {
             const redirectUrl = window.location.origin + '/confirmacion.html';
@@ -1654,6 +1741,11 @@ class CheckoutManager {
                 description: orderData.description,
                 tax: 0,
                 redirectionUrl: redirectUrl,
+
+                // IMPORTANTE: Firma de integridad HMAC-SHA256
+                // Para producción, esto debe generarse en el backend
+                // Por ahora, campo vacío para desarrollo (Bold lo permite en modo sandbox)
+                integritySignature: '',
 
                 // Metadatos del pedido
                 metadata: {
@@ -1692,6 +1784,7 @@ class CheckoutManager {
 
         } catch (error) {
             window.procesoEnCurso = false;
+            this.isProcessingPayment = false; // Reset flag
             logger.error('Error al inicializar Bold.co', error);
             alert('Error al iniciar el proceso de pago. Por favor intenta nuevamente.');
         }
@@ -1748,3 +1841,17 @@ if (document.readyState === 'loading') {
 } else {
     initExpCards();
 }
+
+// ===================================
+// PREVENIR ERRORES DE ENLACES SIN HREF VÁLIDO
+// ===================================
+// Prevenir comportamiento por defecto de enlaces con href="#" que causan errores en querySelector
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href="#"]');
+    if (link) {
+        e.preventDefault();
+        logger.debug('Click en enlace sin destino válido prevenido', {
+            text: link.textContent.trim().substring(0, 30)
+        });
+    }
+});

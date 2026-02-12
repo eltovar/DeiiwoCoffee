@@ -537,9 +537,10 @@
     </div>
 
     <!-- Bold.co SDK -->
-    <script src="https://checkout.bold.co/library/boldPaymentButton.js"></script>
+    <!-- defer garantiza que se cargue antes de ejecutar otros scripts -->
+    <script src="https://checkout.bold.co/library/bold.js" defer></script>
 
-    <script src="translations.js"></script>
-    <script src="script.js"></script>
+    <script src="translations.js" defer></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
