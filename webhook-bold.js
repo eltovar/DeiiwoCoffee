@@ -205,21 +205,21 @@ app.post('/api/v1/payments/webhook', async (req, res) => {
         console.log('📨 Webhook recibido:', new Date().toISOString());
         console.log('📥 Body:', JSON.stringify(req.body, null, 2));
 
-        const { event, data, status, order_id, amount, currency, metadata } = req.body;
+        const { type, event, data, status, order_id, amount, currency, metadata } = req.body;
 
-        // Bold v2 usa 'event' para indicar el tipo de notificación
-        const isSuccess = event === 'payment.success' || status === 'APPROVED';
+        // Bold usa 'type: SALE_APPROVED' para pagos exitosos
+        const isSuccess = type === 'SALE_APPROVED' || event === 'payment.success' || status === 'APPROVED';
 
         if (!isSuccess) {
-            console.log(`⏭️ Evento no procesable: ${event || status}`);
+            console.log(`⏭️ Evento no procesable: ${type || event || status}`);
             return res.status(200).json({ received: true });
         }
 
-        // Extraer datos (compatibilidad con ambos formatos)
+        // Extraer datos (compatibilidad con formato Bold SALE_APPROVED)
         const paymentData = data || req.body;
-        const orderId = paymentData.order_id || order_id;
-        const paymentAmount = paymentData.amount || amount;
-        const customerEmail = paymentData.customer_email || metadata?.cliente_email;
+        const orderId = paymentData.metadata?.reference || paymentData.order_id || order_id || data?.payment_id;
+        const paymentAmount = paymentData.amount?.total || paymentData.amount || amount;
+        const customerEmail = paymentData.payer_email || paymentData.customer_email || metadata?.cliente_email;
         const paymentMetadata = paymentData.metadata || metadata || {};
 
         console.log(`✅ Pago exitoso para orden: ${orderId}`);
