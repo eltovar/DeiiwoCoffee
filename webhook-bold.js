@@ -15,13 +15,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ===================================
 // CONFIGURACIÓN (desde .env)
+// IMPORTANTE: .trim() elimina espacios/caracteres invisibles de Windows
 // ===================================
-const BOLD_IDENTITY_KEY = process.env.BOLD_IDENTITY_KEY; // Para crear links de pago (API)
-const BOLD_SECRET_KEY = process.env.BOLD_SECRET_KEY;     // Para verificar webhooks
-const EMAIL_USER = process.env.EMAIL_USER || 'deiwocoffee@gmail.com';
-const EMAIL_PASS = process.env.EMAIL_PASS;
-const EMAIL_ALIAS = process.env.EMAIL_ALIAS || 'atencionalcliente@deiwocoffee.com';
-const APP_URL = process.env.APP_URL || 'http://localhost:3000';
+const BOLD_IDENTITY_KEY = process.env.BOLD_IDENTITY_KEY?.trim(); // Para crear links de pago (API)
+const BOLD_SECRET_KEY = process.env.BOLD_SECRET_KEY?.trim();     // Para verificar webhooks
+const EMAIL_USER = (process.env.EMAIL_USER || 'deiwocoffee@gmail.com').trim();
+const EMAIL_PASS = process.env.EMAIL_PASS?.trim();
+const EMAIL_ALIAS = (process.env.EMAIL_ALIAS || 'atencionalcliente@deiwocoffee.com').trim();
+const APP_URL = (process.env.APP_URL || 'http://localhost:3000').trim();
+
+// Verificar llaves al iniciar (sin mostrar valores por seguridad)
 
 // Verificar que tenemos las API keys
 if (!BOLD_IDENTITY_KEY) {
@@ -91,34 +94,26 @@ app.post('/api/v1/payments/create-link', async (req, res) => {
             });
         }
 
-        // Preparar payload según documentación oficial de Bold
-        // https://developers.bold.co/pagos-en-linea/api-link-de-pagos
+        // Preparar payload según API Bold
+        // Solo campos que Bold acepta
         const payload = {
-            amount_type: 'CLOSE', // Monto fijo establecido por el comercio
+            amount_type: 'CLOSE',
             amount: {
                 currency: 'COP',
-                total_amount: cleanAmount,
-                tip_amount: 0
+                total_amount: cleanAmount
             },
-            description: description || 'Compra en Deiiwo Coffee',
-            reference: orderId || `DC-${Date.now()}`, // Identificador único de la venta
-            redirect_url: `${APP_URL}/confirmacion.html`,
-            // Campos opcionales
-            payer_email: customer_email,
-            expiration_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 horas
+            description: description || 'Compra en Deiiwo Coffee'
         };
 
         console.log('📤 Enviando a Bold API:', {
             amount_type: payload.amount_type,
             total_amount: payload.amount.total_amount,
-            reference: payload.reference,
-            payer_email: payload.payer_email,
-            redirect_url: payload.redirect_url
+            description: payload.description
         });
 
-        // Llamar a la API de Bold (endpoint correcto según documentación)
+        // Llamar a la API de Bold
         // URL: https://integrations.api.bold.co/online/link/v1
-        // Auth: x-api-key (NO Bearer)
+        // Auth: x-api-key
         const response = await axios.post(
             'https://integrations.api.bold.co/online/link/v1',
             payload,
@@ -152,7 +147,7 @@ app.post('/api/v1/payments/create-link', async (req, res) => {
             success: true,
             url: paymentUrl,
             paymentLinkId: paymentLinkId,
-            orderId: payload.reference
+            orderId: orderId || paymentLinkId
         });
 
     } catch (error) {

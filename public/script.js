@@ -1428,10 +1428,21 @@ class CheckoutManager {
             this.setEnvioLoading(false);
 
             if (distanciaReal !== null) {
-                // Usar distancia real de API
+                // NUEVO: Envío GRATIS si distancia < 1km
+                if (distanciaReal < 1) {
+                    logger.success('Envío GRATIS aplicado', {
+                        razon: 'Distancia menor a 1km',
+                        distanciaKm: distanciaReal.toFixed(2)
+                    });
+                    this.envioCalculado = 0;
+                    this.updateCosts();
+                    return;
+                }
+
+                // Usar distancia real de API para calcular costo
                 this.envioCalculado = Math.ceil(distanciaReal) * this.CONFIG.precio_por_km;
                 logger.success('Costo de envío calculado con API', {
-                    distanciaKm: distanciaReal,
+                    distanciaKm: distanciaReal.toFixed(2),
                     precioPorKm: this.CONFIG.precio_por_km,
                     costoTotal: this.envioCalculado
                 });
@@ -1455,6 +1466,19 @@ class CheckoutManager {
         };
 
         const km = distancias[ciudad] || 15;
+
+        // NUEVO: Envío GRATIS si distancia < 1km (también en fallback)
+        if (km < 1) {
+            logger.success('Envío GRATIS aplicado (fallback)', {
+                razon: 'Distancia menor a 1km',
+                ciudad,
+                distanciaKm: km
+            });
+            this.envioCalculado = 0;
+            this.updateCosts();
+            return;
+        }
+
         this.envioCalculado = Math.ceil(km) * this.CONFIG.precio_por_km;
 
         logger.info('Costo de envío calculado con tabla predefinida', {
