@@ -1633,49 +1633,6 @@ class CheckoutManager {
      * Inyectar dinámicamente el SDK de Bold si no está presente
      * Esto resuelve problemas de carga del script desde el HTML
      */
-    async injectBoldSDK() {
-        return new Promise((resolve) => {
-            // Ya está cargado
-            if (typeof BoldCheckout !== 'undefined') {
-                logger.success('BoldCheckout SDK ya está disponible');
-                return resolve(true);
-            }
-
-            logger.warn('SDK de Bold no encontrado. Iniciando inyección dinámica...');
-
-            // Crear elemento script y agregarlo al DOM
-            const script = document.createElement('script');
-            script.src = 'https://checkout.bold.co/library/bold.js';
-            script.async = true;
-
-            script.onload = () => {
-                logger.success('SDK de Bold inyectado y cargado exitosamente');
-                // Esperar un momento extra para asegurar que el objeto global esté disponible
-                setTimeout(() => resolve(true), 200);
-            };
-
-            script.onerror = () => {
-                logger.error('No se pudo cargar el script de Bold', {
-                    posiblesCausas: [
-                        'Bloqueador de anuncios activo',
-                        'Problema de conexión a internet',
-                        'URL de Bold.co no accesible',
-                        'CORS o firewall bloqueando el recurso'
-                    ],
-                    scriptUrl: 'https://checkout.bold.co/library/bold.js'
-                });
-                resolve(false);
-            };
-
-            logger.debug('Inyectando script de Bold en el DOM...', {
-                src: script.src,
-                async: script.async
-            });
-
-            document.head.appendChild(script);
-        });
-    }
-
     async initBoldPayment() {
         // Prevenir doble ejecución
         if (this.isProcessingPayment) {
@@ -1684,109 +1641,80 @@ class CheckoutManager {
         }
 
         this.isProcessingPayment = true;
-        logger.info('Iniciando proceso de pago con Bold.co');
-
-        const orderData = this.getOrderData();
-
-        logger.debug('Datos de la orden generados', {
-            orderId: orderData.orderId,
-            amount: orderData.amount,
-            currency: orderData.currency,
-            itemsCount: orderData.items.length,
-            subtotal: orderData.subtotal,
-            envio: orderData.shipping.costo,
-            customer: {
-                nombre: orderData.customer.nombre,
-                email: orderData.customer.email,
-                telefono: orderData.customer.telefono
-            },
-            shipping: {
-                metodo: orderData.shipping.metodo,
-                ciudad: orderData.shipping.ciudad
-            }
-        });
-
-        // INYECCIÓN DINÁMICA: Intentar cargar el SDK si no está presente
-        const sdkLoaded = await this.injectBoldSDK();
-
-        if (!sdkLoaded) {
-            this.isProcessingPayment = false;
-            alert('Error al cargar el sistema de pagos de Bold.co. Por favor:\n\n1. Desactiva bloqueadores de anuncios\n2. Verifica tu conexión a internet\n3. Recarga la página\n\nSi el problema persiste, contacta a soporte.');
-            return;
-        }
-
-        // Verificación final después de la inyección
-        if (typeof BoldCheckout === 'undefined') {
-            logger.error('BoldCheckout SDK no disponible después de inyección', {
-                razon: 'El objeto BoldCheckout no se definió globalmente',
-                posibleCausa: 'Versión incompatible del SDK o problema en el script de Bold'
-            });
-            this.isProcessingPayment = false;
-            alert('Error técnico al inicializar Bold.co. Por favor recarga la página.');
-            return;
-        }
-
-        logger.success('BoldCheckout SDK confirmado y listo para usar')
+        logger.info('Iniciando creación de Link de Pago vía API...');
 
         try {
-            const redirectUrl = window.location.origin + '/confirmacion.html';
-            logger.debug('URL de redirección configurada', { redirectUrl });
+            const orderData = this.getOrderData();
 
-            // Inicializar Bold con API Key pública
-            const boldConfig = {
+            logger.debug('Datos de la orden generados', {
                 orderId: orderData.orderId,
-                currency: orderData.currency,
                 amount: orderData.amount,
-                apiKey: '-OA3_-SARWimpjOAZqugRvhY2W_d3YhNsT0YF8m1uI1U',
-                description: orderData.description,
-                tax: 0,
-                redirectionUrl: redirectUrl,
-
-                // IMPORTANTE: Firma de integridad HMAC-SHA256
-                // Para producción, esto debe generarse en el backend
-                // Por ahora, campo vacío para desarrollo (Bold lo permite en modo sandbox)
-                integritySignature: '',
-
-                // Metadatos del pedido
-                metadata: {
-                    items: JSON.stringify(orderData.items),
-                    subtotal: orderData.subtotal,
-                    envio: orderData.shipping.costo,
-                    cliente_nombre: orderData.customer.nombre,
-                    cliente_email: orderData.customer.email,
-                    cliente_telefono: orderData.customer.telefono,
-                    direccion: orderData.shipping.direccion,
-                    ciudad: orderData.shipping.ciudad,
-                    indicaciones: orderData.shipping.indicaciones
+                currency: orderData.currency,
+                itemsCount: orderData.items.length,
+                subtotal: orderData.subtotal,
+                envio: orderData.shipping.costo,
+                customer: {
+                    nombre: orderData.customer.nombre,
+                    email: orderData.customer.email,
+                    telefono: orderData.customer.telefono
+                },
+                shipping: {
+                    metodo: orderData.shipping.metodo,
+                    ciudad: orderData.shipping.ciudad
                 }
-            };
-
-            logger.info('Configuración de Bold preparada', {
-                orderId: boldConfig.orderId,
-                amount: boldConfig.amount,
-                metadataKeys: Object.keys(boldConfig.metadata)
             });
 
-            const boldCheckout = new BoldCheckout(boldConfig);
-            logger.success('Instancia de BoldCheckout creada');
+            // Llamar al backend para crear el link de pago
+            logger.info('Solicitando link de pago al servidor...');
 
-            // Marcar proceso en curso
-            window.procesoEnCurso = true;
-            logger.debug('Proceso de pago marcado como EN CURSO');
+            const response = await fetch('/api/v1/payments/create-link', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    amount: orderData.amount,
+                    description: orderData.description,
+                    orderId: orderData.orderId,
+                    customer_email: orderData.customer.email,
+                    customer_name: orderData.customer.nombre,
+                    customer_phone: orderData.customer.telefono,
+                    metadata: {
+                        items: JSON.stringify(orderData.items),
+                        subtotal: orderData.subtotal,
+                        envio: orderData.shipping.costo,
+                        cliente_nombre: orderData.customer.nombre,
+                        cliente_email: orderData.customer.email,
+                        cliente_telefono: orderData.customer.telefono,
+                        direccion: orderData.shipping.direccion,
+                        ciudad: orderData.shipping.ciudad,
+                        indicaciones: orderData.shipping.indicaciones
+                    }
+                })
+            });
 
-            logger.info('Abriendo modal de pago de Bold.co');
-            boldCheckout.open();
+            const result = await response.json();
 
-            logger.success('Modal de Bold.co abierto exitosamente');
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || 'Error al crear link de pago');
+            }
 
-            // El proceso terminará cuando el usuario complete o cancele el pago
-            // Bold redirigirá a confirmacion.html en caso de éxito
+            logger.success('Link de pago creado exitosamente', {
+                orderId: result.orderId,
+                url: result.url
+            });
+
+            // Redirigir al usuario a la página de pago de Bold
+            logger.info('Redirigiendo a página de pago de Bold.co...');
+            window.location.href = result.url;
 
         } catch (error) {
-            window.procesoEnCurso = false;
-            this.isProcessingPayment = false; // Reset flag
-            logger.error('Error al inicializar Bold.co', error);
-            alert('Error al iniciar el proceso de pago. Por favor intenta nuevamente.');
+            this.isProcessingPayment = false;
+            logger.error('Error al crear link de pago', {
+                message: error.message,
+                details: error.details || 'No hay detalles adicionales'
+            });
+            alert('Error al iniciar el proceso de pago.\n\n' + error.message + '\n\nPor favor intenta nuevamente o contacta a soporte.');
         }
     }
 }
