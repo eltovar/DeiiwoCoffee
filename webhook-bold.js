@@ -4,7 +4,11 @@ const nodemailer = require('nodemailer');
 const path = require('path');
 const cors = require('cors');
 const crypto = require('crypto');
+const dns = require('dns');
 require('dotenv').config();
+
+// Forzar IPv4 globalmente - Railway tiene problemas con IPv6 hacia Gmail
+dns.setDefaultResultOrder('ipv4first');
 
 const app = express();
 
@@ -35,12 +39,21 @@ if (!BOLD_SECRET_KEY) {
 }
 
 // Configurar transporter de email
+// IMPORTANTE: Usar configuración explícita para forzar IPv4 (Railway tiene problemas con IPv6)
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // true para 465, false para otros puertos
     auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASS
-    }
+    },
+    // Forzar IPv4 - Railway tiene problemas conectando a Gmail via IPv6
+    family: 4,
+    // Timeouts más largos para conexiones lentas
+    connectionTimeout: 60000, // 60 segundos
+    greetingTimeout: 30000,
+    socketTimeout: 60000
 });
 
 // ===================================
