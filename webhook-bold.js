@@ -1,14 +1,10 @@
 const express = require('express');
 const axios = require('axios');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const path = require('path');
 const cors = require('cors');
 const crypto = require('crypto');
-const dns = require('dns');
 require('dotenv').config();
-
-// Forzar IPv4 globalmente - Railway tiene problemas con IPv6 hacia Gmail
-dns.setDefaultResultOrder('ipv4first');
 
 const app = express();
 
@@ -23,8 +19,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ===================================
 const BOLD_IDENTITY_KEY = process.env.BOLD_IDENTITY_KEY?.trim(); // Para crear links de pago (API)
 const BOLD_SECRET_KEY = process.env.BOLD_SECRET_KEY?.trim();     // Para verificar webhooks
-const EMAIL_USER = (process.env.EMAIL_USER || 'deiwocoffee@gmail.com').trim();
-const EMAIL_PASS = process.env.EMAIL_PASS?.trim();
+const RESEND_API_KEY = process.env.RESEND_API_KEY?.trim();       // Para enviar emails via Resend
 const EMAIL_ALIAS = (process.env.EMAIL_ALIAS || 'atencionalcliente@deiwocoffee.com').trim();
 const APP_URL = (process.env.APP_URL || 'http://localhost:3000').trim();
 
@@ -37,24 +32,17 @@ if (!BOLD_IDENTITY_KEY) {
 if (!BOLD_SECRET_KEY) {
     console.error('⚠️ ADVERTENCIA: BOLD_SECRET_KEY no está definida en .env (necesaria para webhooks)');
 }
+if (!RESEND_API_KEY) {
+    console.error('⚠️ ADVERTENCIA: RESEND_API_KEY no está definida en .env (necesaria para enviar emails)');
+}
 
-// Configurar transporter de email
-// IMPORTANTE: Usar configuración explícita para forzar IPv4 (Railway tiene problemas con IPv6)
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // true para 465, false para otros puertos
-    auth: {
-        user: EMAIL_USER,
-        pass: EMAIL_PASS
-    },
-    // Forzar IPv4 - Railway tiene problemas conectando a Gmail via IPv6
-    family: 4,
-    // Timeouts más largos para conexiones lentas
-    connectionTimeout: 60000, // 60 segundos
-    greetingTimeout: 30000,
-    socketTimeout: 60000
-});
+// Configurar Resend para envío de emails
+// IMPORTANTE: Usa API HTTP en lugar de SMTP - compatible con Railway y cualquier VPS
+const resend = new Resend(RESEND_API_KEY);
+
+// Remitente para pruebas (mientras no se verifica el dominio en Resend)
+// Cambiar a 'Deiiwo Coffee <atencionalcliente@deiwocoffee.com>' después de verificar dominio
+const EMAIL_FROM = 'onboarding@resend.dev';
 
 // ===================================
 // RUTAS DE PÁGINA WEB
@@ -73,6 +61,8 @@ app.get('/health', (req, res) => {
         message: 'Servidor Deiiwo Coffee activo',
         boldIdentityKey: !!BOLD_IDENTITY_KEY,
         boldSecretKey: !!BOLD_SECRET_KEY,
+        resendApiKey: !!RESEND_API_KEY,
+        emailFrom: EMAIL_FROM,
         timestamp: new Date().toISOString()
     });
 });
@@ -262,30 +252,40 @@ app.post('/api/v1/payments/webhook', async (req, res) => {
         console.log(`👤 Cliente: ${cliente.nombre} (${cliente.email})`);
         console.log(`📍 Envío a: ${envio.direccion}`);
 
-        // ENVIAR EMAIL AL CLIENTE
+        // ENVIAR EMAIL AL CLIENTE (via Resend API)
         if (cliente.email) {
             try {
-                await transporter.sendMail({
-                    from: `"Atención al Cliente Deiiwo" <${EMAIL_ALIAS}>`,
+                const { data, error } = await resend.emails.send({
+                    from: EMAIL_FROM,
                     to: cliente.email,
                     subject: `¡Pedido confirmado! #${orderId}`,
                     html: emailCliente(orderId, items, paymentAmount, envio, cliente)
                 });
-                console.log(`✅ Email enviado al cliente: ${cliente.email}`);
+
+                if (error) {
+                    console.error('❌ Error Resend (cliente):', error.message);
+                } else {
+                    console.log(`✅ Email enviado al cliente: ${cliente.email} (ID: ${data.id})`);
+                }
             } catch (emailError) {
                 console.error('❌ Error enviando email al cliente:', emailError.message);
             }
         }
 
-        // ENVIAR EMAIL INTERNO A DEIIWO
+        // ENVIAR EMAIL INTERNO A DEIIWO (via Resend API)
         try {
-            await transporter.sendMail({
-                from: `"Sistema Deiiwo" <${EMAIL_ALIAS}>`,
+            const { data, error } = await resend.emails.send({
+                from: EMAIL_FROM,
                 to: EMAIL_ALIAS,
-                subject: `🚨 Pedido Pagado: ${orderId} - $${Number(paymentAmount).toLocaleString()}`,
+                subject: `Pedido Pagado: ${orderId} - $${Number(paymentAmount).toLocaleString()}`,
                 html: emailInterno(orderId, items, paymentAmount, envio, cliente)
             });
-            console.log(`✅ Email de notificación enviado a: ${EMAIL_ALIAS}`);
+
+            if (error) {
+                console.error('❌ Error Resend (interno):', error.message);
+            } else {
+                console.log(`✅ Email de notificación enviado a: ${EMAIL_ALIAS} (ID: ${data.id})`);
+            }
         } catch (emailError) {
             console.error('❌ Error enviando email interno:', emailError.message);
         }
@@ -449,4 +449,6 @@ app.listen(PORT, () => {
     console.log(`📨 Webhook: http://localhost:${PORT}/api/v1/payments/webhook`);
     console.log(`🔑 Bold Identity Key: ${BOLD_IDENTITY_KEY ? '✅ Configurada' : '❌ NO CONFIGURADA'}`);
     console.log(`🔐 Bold Secret Key: ${BOLD_SECRET_KEY ? '✅ Configurada' : '❌ NO CONFIGURADA'}`);
+    console.log(`📧 Resend API Key: ${RESEND_API_KEY ? '✅ Configurada' : '❌ NO CONFIGURADA'}`);
+    console.log(`📤 Email remitente: ${EMAIL_FROM}`);
 });
