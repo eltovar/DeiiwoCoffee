@@ -701,16 +701,16 @@ class ShoppingCart {
             window.open(`https://wa.me/573022199112?text=${whatsappMessage}`, '_blank');
         });
 
-        // Bold checkout button
-        const checkoutBold = document.getElementById('checkoutBold');
-        checkoutBold?.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (this.items.length === 0) {
-                alert('Tu carrito está vacío');
-                return;
-            }
-            checkout.open();
-        });
+        // BOLD PAUSADO
+        // const checkoutBold = document.getElementById('checkoutBold');
+        // checkoutBold?.addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     if (this.items.length === 0) {
+        //         alert('Tu carrito está vacío');
+        //         return;
+        //     }
+        //     checkout.open();
+        // });
     }
 
     addItem(product) {
@@ -959,7 +959,8 @@ class CheckoutManager {
         this.closeBtn = document.getElementById('checkoutClose');
         this.btnBack = document.getElementById('btnBack');
         this.btnContinue = document.getElementById('btnContinue');
-        this.btnPagar = document.getElementById('btnPagar');
+        // BOLD PAUSADO
+        // this.btnPagar = document.getElementById('btnPagar');
 
         const elementsFound = {
             modal: !!this.modal,
@@ -967,7 +968,7 @@ class CheckoutManager {
             closeBtn: !!this.closeBtn,
             btnBack: !!this.btnBack,
             btnContinue: !!this.btnContinue,
-            btnPagar: !!this.btnPagar
+            // btnPagar: !!this.btnPagar  // BOLD PAUSADO
         };
 
         logger.debug('Elementos del DOM encontrados', elementsFound);
@@ -1020,15 +1021,15 @@ class CheckoutManager {
             ratesContainer.classList.toggle('active');
         });
 
-        // Botón pagar - prevenir doble click
-        this.btnPagar?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            if (this.isProcessingPayment) {
-                logger.warn('Pago ya en proceso, ignorando click duplicado');
-                return;
-            }
-            await this.initBoldPayment();
-        });
+        // BOLD PAUSADO
+        // this.btnPagar?.addEventListener('click', async (e) => {
+        //     e.preventDefault();
+        //     if (this.isProcessingPayment) {
+        //         logger.warn('Pago ya en proceso, ignorando click duplicado');
+        //         return;
+        //     }
+        //     await this.initBoldPayment();
+        // });
     }
 
     open() {
@@ -1089,7 +1090,7 @@ class CheckoutManager {
             step2.style.display = 'none';
             this.btnBack.style.display = 'none';
             this.btnContinue.style.display = 'block';
-            this.btnPagar.style.display = 'none';
+            // this.btnPagar.style.display = 'none'; // BOLD PAUSADO
             this.renderItems();
         } else {
             console.log('✅ Rendering Step 2 (Shipping Form)');
@@ -1097,7 +1098,7 @@ class CheckoutManager {
             step2.style.display = 'block';
             this.btnBack.style.display = 'block';
             this.btnContinue.style.display = 'block';
-            this.btnPagar.style.display = 'none';
+            // this.btnPagar.style.display = 'none'; // BOLD PAUSADO
             this.updateCosts();
         }
     }
@@ -1590,10 +1591,11 @@ class CheckoutManager {
         return true;
     }
 
-    showPayButton() {
-        this.btnContinue.style.display = 'none';
-        this.btnPagar.style.display = 'block';
-    }
+    // BOLD PAUSADO
+    // showPayButton() {
+    //     this.btnContinue.style.display = 'none';
+    //     this.btnPagar.style.display = 'block';
+    // }
 
     getOrderData() {
         logger.debug('Generando datos de la orden');
@@ -1653,12 +1655,8 @@ class CheckoutManager {
         return orderData;
     }
 
-    /**
-     * Inyectar dinámicamente el SDK de Bold si no está presente
-     * Esto resuelve problemas de carga del script desde el HTML
-     */
+    /* BOLD PAUSADO
     async initBoldPayment() {
-        // Prevenir doble ejecución
         if (this.isProcessingPayment) {
             logger.warn('initBoldPayment llamado mientras ya hay un proceso en curso');
             return;
@@ -1688,7 +1686,6 @@ class CheckoutManager {
                 }
             });
 
-            // Llamar al backend para crear el link de pago
             logger.info('Solicitando link de pago al servidor...');
 
             const response = await fetch('/api/v1/payments/create-link', {
@@ -1728,7 +1725,6 @@ class CheckoutManager {
                 url: result.url
             });
 
-            // Redirigir al usuario a la página de pago de Bold
             logger.info('Redirigiendo a página de pago de Bold.co...');
             window.location.href = result.url;
 
@@ -1741,6 +1737,7 @@ class CheckoutManager {
             alert('Error al iniciar el proceso de pago.\n\n' + error.message + '\n\nPor favor intenta nuevamente o contacta a soporte.');
         }
     }
+    */
 }
 
 // Inicializar checkout manager
