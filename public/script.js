@@ -1807,3 +1807,97 @@ document.addEventListener('click', (e) => {
         });
     }
 });
+
+// ===================================
+// CARRUSEL DE ORIGEN (SLIDER)
+// ===================================
+function initOriginCarousel() {
+    const wrapper = document.querySelector('.origin-carousel-wrapper');
+    const slides = document.querySelectorAll('.origin-slide');
+    const dots = document.querySelectorAll('.origin-carousel-dot');
+    const prevBtn = document.querySelector('.origin-carousel-prev');
+    const nextBtn = document.querySelector('.origin-carousel-next');
+
+    if (!wrapper || slides.length === 0) return;
+
+    let currentSlide = 0;
+    let autoPlayInterval;
+    const totalSlides = slides.length;
+
+    function showSlide(index) {
+        // Normalizar índice
+        if (index >= totalSlides) index = 0;
+        if (index < 0) index = totalSlides - 1;
+
+        currentSlide = index;
+
+        // Mover slider con translateX
+        wrapper.style.transform = `translateX(-${index * 100}%)`;
+
+        // Actualizar dots
+        dots.forEach((dot, i) => {
+            dot.classList.remove('active');
+            if (i === index) {
+                dot.classList.add('active');
+            }
+        });
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    function startAutoPlay() {
+        autoPlayInterval = setInterval(nextSlide, 30000);
+    }
+
+    function stopAutoPlay() {
+        clearInterval(autoPlayInterval);
+    }
+
+    // Event listeners
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            stopAutoPlay();
+            startAutoPlay();
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            stopAutoPlay();
+            startAutoPlay();
+        });
+    }
+
+    dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+            showSlide(i);
+            stopAutoPlay();
+            startAutoPlay();
+        });
+    });
+
+    // Pausar autoplay cuando el usuario pasa el mouse
+    const carousel = document.querySelector('.origin-carousel');
+    if (carousel) {
+        carousel.addEventListener('mouseenter', stopAutoPlay);
+        carousel.addEventListener('mouseleave', startAutoPlay);
+    }
+
+    // Iniciar autoplay
+    startAutoPlay();
+}
+
+// Inicializar carrusel cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initOriginCarousel);
+} else {
+    initOriginCarousel();
+}

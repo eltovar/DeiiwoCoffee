@@ -15,7 +15,7 @@ Se ha migrado completamente de **SDK (BoldCheckout modal)** a **API Link de Pago
 
 ## 📋 Archivos Modificados
 
-### 1. `webhook-bold.js` (Servidor)
+### 1. `app.js` (Servidor)
 **Nuevo endpoint agregado:** `/create-payment-link`
 
 **Ubicación:** Líneas 52-145

@@ -6,7 +6,7 @@
 DeiiwoCoffee/
 │
 ├── 🚀 SERVIDOR (Archivos Node.js)
-│   ├── webhook-bold.js          # Servidor Express (sirve web + webhook)
+│   ├── app.js          # Servidor Express (sirve web + webhook)
 │   ├── package.json             # Configuración Node.js y dependencias
 │   ├── .env                     # Credenciales (NO subir a Git)
 │   └── .env.example             # Plantilla de variables
@@ -73,7 +73,7 @@ Los siguientes archivos fueron eliminados de la raíz porque están duplicados e
 **Propósito:** Configuración del servidor y documentación
 
 **Archivos clave:**
-- `webhook-bold.js`: El servidor que ejecuta Railway
+- `app.js`: El servidor que ejecuta Railway
 - `package.json`: Define las dependencias (express, nodemailer)
 - `.env`: Credenciales (SOLO local, no se sube a Git)
 
@@ -82,7 +82,7 @@ Los siguientes archivos fueron eliminados de la raíz porque están duplicados e
 
 **Cómo funciona:**
 ```javascript
-// En webhook-bold.js:
+// En app.js:
 app.use(express.static(path.join(__dirname, 'public')));
 ```
 

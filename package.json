@@ -2,10 +2,10 @@
   "name": "deiiwo-coffee-server",
   "version": "1.0.0",
   "description": "Servidor web y webhook para Deiiwo Coffee con integración Bold.co",
-  "main": "webhook-bold.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node webhook-bold.js",
-    "dev": "node webhook-bold.js"
+    "start": "node app.js",
+    "dev": "node app.js"
   },
   "keywords": [
     "deiiwo",

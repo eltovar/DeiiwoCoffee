@@ -147,23 +147,102 @@
         </div>
     </section>
 
-    <!-- Origen y Legado -->
+    <!-- Origen y Legado - Carrusel -->
     <section class="section section-light" id="origen">
         <div class="container">
-            <div class="origin-grid">
-                <div class="origin-content reveal">
-                    <p class="section-tag" data-i18n="origen.label">Somos Deiiwo</p>
-                    <h2 class="section-title" data-i18n="nav.origen">Origen y Legado</h2>
-                    <p class="origin-text" data-i18n="origen.p1">Cada grano cuenta una historia. Trabajamos de la mano con caficultores de las montañas colombianas, quienes generación tras generación han cultivado con pasión los mejores granos del mundo.</p>
-                    <p class="origin-text" data-i18n="origen.p2">Desde las tierras altas del Huila hasta el Eje Cafetero, honramos el legado de nuestros productores llevando su excelencia a más de 50 países. Comercio justo, sostenibilidad y calidad excepcional.</p>
+            <!-- Carrusel de historias -->
+            <div class="origin-carousel">
+                <div class="origin-carousel-wrapper" id="originCarousel">
+                    <!-- Slide 1: Historia de la empresa -->
+                    <div class="origin-slide active">
+                        <div class="origin-grid">
+                            <div class="origin-content reveal">
+                                <p class="section-tag" data-i18n="origen.label">Somos Deiiwo</p>
+                                <h2 class="section-title" data-i18n="nav.origen">Origen y Legado</h2>
+                                <p class="origin-text" data-i18n="origen.p1">Cada grano cuenta una historia. Trabajamos de la mano con caficultores de las montañas colombianas, quienes generación tras generación han cultivado con pasión los mejores granos del mundo.</p>
+                                <p class="origin-text" data-i18n="origen.p2">Desde las tierras altas del Huila hasta el Eje Cafetero, honramos el legado de nuestros productores llevando su excelencia a más de 50 países. Comercio justo, sostenibilidad y calidad excepcional.</p>
+                            </div>
+                            <div class="origin-visual reveal">
+                                <div class="origin-img-3d" id="tilt3d">
+                                    <img src="img/Cafes.png" alt="Cafés Deiiwo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                </div>
+                    <!-- Slide 2: Historia del Tigrillo -->
+                    <div class="origin-slide">
+                        <div class="origin-grid origin-grid-reverse">
+                            <div class="origin-visual reveal">
+                                <div class="origin-img-tigrillo">
+                                    <img src="img/Tigrillo.png" alt="Tigrillo Antioqueño - Ocelote símbolo de Deiiwo Coffee">
+                                </div>
+                            </div>
+                            <div class="origin-content reveal">
+                                <p class="section-tag">Nuestro Símbolo</p>
+                                <h2 class="section-title">El tigrillo antioqueño guarda un secreto</h2>
+                                <p class="origin-text-italic">En los bosques húmedos de Antioquia, entre corredores biológicos y zonas cafeteras, habita el ocelote. Su presencia es indicador de un ecosistema saludable, de un bosque vivo.</p>
+                                <p class="origin-text">Por eso lo elegimos como símbolo de nuestra nueva bolsa: porque donde hay café cultivado con conciencia, hay naturaleza próspera.</p>
 
-                <div class="origin-visual reveal">
-                    <div class="origin-img-3d" id="tilt3d">
-                        <img src="img/Cafes.png" alt="Cafés Deiiwo">
+                                <div class="origin-manifiesto">
+                                    <p class="origin-manifiesto-title">Nuestra bolsa es más que empaque. Es un manifiesto:</p>
+                                    <div class="origin-list">
+                                        <div class="origin-list-item">
+                                            <div class="origin-list-icon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 2a10 10 0 1 0 10 10"/>
+                                                    <path d="M12 2v10l7-7"/>
+                                                    <circle cx="12" cy="12" r="3"/>
+                                                </svg>
+                                            </div>
+                                            <span class="origin-list-text">Respeto por los procesos agrícolas</span>
+                                        </div>
+                                        <div class="origin-list-item">
+                                            <div class="origin-list-icon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                                    <circle cx="9" cy="7" r="4"/>
+                                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                                </svg>
+                                            </div>
+                                            <span class="origin-list-text">Conexión directa con caficultores antioqueños</span>
+                                        </div>
+                                        <div class="origin-list-item">
+                                            <div class="origin-list-icon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+                                                    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+                                                </svg>
+                                            </div>
+                                            <span class="origin-list-text">Compromiso con una caficultura que convive con la naturaleza</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="origin-text-italic">El ocelote nos recuerda: la fuerza, elegancia y carácter de nuestro café nacen del equilibrio con la tierra que lo vio crecer.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Indicadores del carrusel -->
+                <div class="origin-carousel-nav">
+                    <button class="origin-carousel-dot active" data-slide="0" aria-label="Slide 1"></button>
+                    <button class="origin-carousel-dot" data-slide="1" aria-label="Slide 2"></button>
+                </div>
+
+                <!-- Flechas de navegación -->
+                <button class="origin-carousel-arrow origin-carousel-prev" aria-label="Anterior">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                <button class="origin-carousel-arrow origin-carousel-next" aria-label="Siguiente">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
             </div>
         </div>
     </section>
