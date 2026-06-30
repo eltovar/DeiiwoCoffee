@@ -1,6 +1,8 @@
 # Servidor HTTP simple con PowerShell
 # Uso: .\start-server.ps1
 # python -m http.server 8000
+# mejor usar --> node servidor.js
+# usar npm run dev
 
 $port = 8080
 $url = "http://localhost:$port"
@@ -61,6 +63,10 @@ try {
 
             $response.ContentType = $contentType
             $response.StatusCode = 200
+
+            # Deshabilitar cache para que los cambios se reflejen inmediatamente
+            $response.Headers.Add("Cache-Control", "no-store, no-cache, must-revalidate")
+            $response.Headers.Add("Pragma", "no-cache")
 
             # Leer y enviar archivo
             $buffer = [System.IO.File]::ReadAllBytes($filePath)

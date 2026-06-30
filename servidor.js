@@ -11,7 +11,20 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Archivos estáticos
+// En desarrollo: sin cache para que los cambios se reflejen inmediatamente
+// En producción: cache normal con ETags para mejor rendimiento
+const isProduction = process.env.NODE_ENV === 'production';
+app.use(express.static(path.join(__dirname, 'public'), {
+    etag: isProduction,
+    lastModified: isProduction,
+    setHeaders: (res) => {
+        if (!isProduction) {
+            res.setHeader('Cache-Control', 'no-store');
+        }
+    }
+}));
 
 // ===================================
 // CONFIGURACIÓN (desde .env)

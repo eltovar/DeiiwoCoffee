@@ -1079,6 +1079,84 @@ button { font-family: inherit; cursor: pointer; }
     line-height: 1.6;
 }
 
+/* ===================================
+   CARRUSEL DE ALIADOS
+   =================================== */
+.aliados-carrusel {
+    margin: 0.5rem 0 3rem;
+    text-align: center;
+}
+
+.aliados-carrusel-titulo {
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 1.75rem;
+    letter-spacing: 0.02em;
+}
+
+.aliados-carrusel-contenedor {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 0.75rem 0;
+    /* Fade elegante en los bordes */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+}
+
+.aliados-carrusel-track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    animation: aliadosScroll 16s linear infinite;
+}
+
+.aliados-carrusel-contenedor:hover .aliados-carrusel-track {
+    animation-play-state: paused;
+}
+
+.aliado-slide {
+    margin: 0 36px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s var(--ease);
+}
+
+.aliado-slide:hover {
+    transform: translateY(-4px);
+}
+
+.aliado-slide img {
+    height: 110px;
+    width: auto;
+    max-width: 220px;
+    object-fit: contain;
+    transition: transform 0.3s var(--ease), filter 0.3s var(--ease);
+}
+
+.aliado-slide:hover img {
+    transform: scale(1.08);
+}
+
+@keyframes aliadosScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+@media (max-width: 480px) {
+    .aliado-slide {
+        margin: 0 24px;
+    }
+    .aliado-slide img {
+        height: 80px;
+        max-width: 160px;
+    }
+}
+
 .distribuidor-cta {
     text-align: center;
     padding-top: 2rem;

@@ -71,6 +71,7 @@ const translations = {
         'dist.cta.desc': 'Conviértase en distribuidor y crezcamos juntos impulsando el consumo consciente de café de especialidad en Colombia.',
         'dist.cta': 'Postúlese como aliado',
         'dist.cta2': 'Trabajemos juntos',
+        'dist.aliados.title': 'Nuestros Aliados',
 
         // Footer
         'footer.tagline': 'Café de especialidad cultivado con pasión en las montañas de Antioquia, Colombia.',
@@ -108,16 +109,15 @@ const translations = {
         'tienda.presentacion': 'Presentación',
         'tienda.molido': 'Molido',
         'tienda.grano': 'En grano',
-        'tienda.dulces.cat': 'Dulces de Café',
-        'tienda.alfajor.title': 'Alfajor de Café',
-        'tienda.alfajor.desc': 'Galleta de sabor café, cubierta con sabor a chocolate.',
-        'tienda.dulce.title': 'Dulce de Café',
-        'tienda.dulce.desc': 'Infundido con extracto de café de alta calidad, logrando un equilibrio perfecto entre el dulzor del caramelo de leche y notas tostadas del grano. Ideal para desayunos con waffles o como relleno de galletas.',
-        'tienda.cherries.title': 'Coffee Cherries',
-        'tienda.cherries.desc': 'Mermelada premium hecha con cereza de café, aprovechando toda la fruta. Innovador, sostenible y gourmet. No es café para tomar, sino un derivado para comer.',
-        'tienda.panchitos.title': 'Panchitos',
-        'tienda.panchitos.desc': 'Caramelo blando de leche con café y coco.',
-        'tienda.btn.agregar': 'Agregar'
+        'tienda.btn.agregar': 'Agregar',
+
+        // Edición Quindío
+        'tienda.quindio.title': 'Edición Quindío',
+        'tienda.quindio.desc': 'Café de especialidad cultivado en las fincas de altura del Quindío. Notas frutales y florales únicas del Eje Cafetero colombiano. Molido o en grano. Envío no incluido.',
+
+        // Drip Bags
+        'tienda.dripbags.title': 'Drip Bags',
+        'tienda.dripbags.desc': 'Café de especialidad en formato drip bag. Solo agua caliente, sabor de las montañas colombianas en cualquier lugar. Envío no incluido.'
     },
 
     en: {
@@ -188,6 +188,7 @@ const translations = {
         'dist.cta.desc': 'Become a distributor and let\'s grow together promoting conscious consumption of specialty coffee in Colombia.',
         'dist.cta': 'Apply as partner',
         'dist.cta2': 'Let\'s work together',
+        'dist.aliados.title': 'Our Partners',
 
         // Footer
         'footer.tagline': 'Specialty coffee grown with passion in the mountains of Antioquia, Colombia.',
@@ -225,15 +226,14 @@ const translations = {
         'tienda.presentacion': 'Presentation',
         'tienda.molido': 'Ground',
         'tienda.grano': 'Whole bean',
-        'tienda.dulces.cat': 'Coffee Sweets',
-        'tienda.alfajor.title': 'Coffee Alfajor',
-        'tienda.alfajor.desc': 'Coffee flavored cookie, covered with chocolate flavor.',
-        'tienda.dulce.title': 'Coffee Dulce',
-        'tienda.dulce.desc': 'Infused with high quality coffee extract, achieving a perfect balance between the sweetness of milk caramel and toasted notes of the bean. Ideal for breakfasts with waffles or as cookie filling.',
-        'tienda.cherries.title': 'Coffee Cherries',
-        'tienda.cherries.desc': 'Premium jam made with coffee cherry, using the whole fruit. Innovative, sustainable and gourmet. Not coffee to drink, but a derivative to eat.',
-        'tienda.panchitos.title': 'Panchitos',
-        'tienda.panchitos.desc': 'Soft milk caramel with coffee and coconut.',
-        'tienda.btn.agregar': 'Add'
+        'tienda.btn.agregar': 'Add',
+
+        // Edición Quindío
+        'tienda.quindio.title': 'Quindío Edition',
+        'tienda.quindio.desc': 'Specialty coffee grown in the highland farms of Quindío. Unique fruity and floral notes from the Colombian Coffee Belt. Ground or whole bean. Shipping not included.',
+
+        // Drip Bags
+        'tienda.dripbags.title': 'Drip Bags',
+        'tienda.dripbags.desc': 'Specialty coffee in drip bag format. Just hot water, taste of the Colombian mountains anywhere you go. Shipping not included.'
     }
 };

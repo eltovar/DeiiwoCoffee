@@ -29,11 +29,8 @@ DeiiwoCoffee/
 │           │   ├── MesaDeCafe.jpeg
 │           │   └── MesadeCafe2.jpeg
 │           └── imgProductos/
-│               ├── Cafe de Especialidad.jpg
-│               ├── AlfajorCafe.png
-│               ├── DulceCafe.png
-│               ├── CoffeeCherries.png
-│               └── panchitos.png
+│               ├── CafeFondoNegro.png
+│               └── Cafe de Especialidad.jpg
 │
 ├── 📚 DOCUMENTACIÓN
 │   ├── README-DEPLOY.md         # Guía completa de deployment

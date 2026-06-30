@@ -1,11 +1,11 @@
 {
   "name": "deiiwo-coffee-server",
   "version": "1.0.0",
-  "description": "Servidor web y webhook para Deiiwo Coffee con integración Bold.co",
+  "description": "Servidor web y webhook para Deiiwo Coffee con integracion Bold.co",
   "main": "servidor.js",
   "scripts": {
     "start": "node servidor.js",
-    "dev": "node servidor.js"
+    "dev": "nodemon servidor.js"
   },
   "keywords": [
     "deiiwo",
@@ -22,6 +22,9 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "resend": "^4.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   },
   "engines": {
     "node": ">=18.0.0"

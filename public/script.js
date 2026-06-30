@@ -597,11 +597,28 @@ const cafePrice = document.getElementById('cafePrice');
 const addCafeBtn = document.getElementById('addCafeToCart');
 
 if (cafeTamano && cafePrice) {
-    // Actualizar precio cuando cambia el tamaño
     cafeTamano.addEventListener('change', () => {
         const selectedOption = cafeTamano.options[cafeTamano.selectedIndex];
         const price = parseInt(selectedOption.dataset.price);
         cafePrice.textContent = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0
+        }).format(price);
+    });
+}
+
+// ===================================
+// EDICIÓN QUINDÍO - SELECTOR DINÁMICO
+// ===================================
+const quindioTamano = document.getElementById('quindioTamano');
+const quindioPrice = document.getElementById('quindioPrice');
+
+if (quindioTamano && quindioPrice) {
+    quindioTamano.addEventListener('change', () => {
+        const selectedOption = quindioTamano.options[quindioTamano.selectedIndex];
+        const price = parseInt(selectedOption.dataset.price);
+        quindioPrice.textContent = new Intl.NumberFormat('es-CO', {
             style: 'currency',
             currency: 'COP',
             minimumFractionDigits: 0
@@ -675,6 +692,41 @@ class ShoppingCart {
 
                 const tamanoText = tamano === '2500' ? '2.5kg' : `${tamano}g`;
                 const name = `Café de Especialidad ${tamanoText} (${presentacionText})`;
+
+                this.addItem({ name, price });
+                this.showFeedback(e.target);
+            });
+        }
+
+        // Botón Edición Quindío (con selectores de tamaño y presentación)
+        const addQuindioBtn = document.getElementById('addQuindioToCart');
+        if (addQuindioBtn) {
+            addQuindioBtn.addEventListener('click', (e) => {
+                const tamanoSelect = document.getElementById('quindioTamano');
+                const presentacionSelect = document.getElementById('quindioPresentacion');
+
+                const tamanoOption = tamanoSelect.options[tamanoSelect.selectedIndex];
+                const tamano = tamanoSelect.value;
+                const price = parseInt(tamanoOption.dataset.price);
+
+                const presentacion = presentacionSelect.value;
+                const presentacionText = presentacion === 'molido'
+                    ? langManager.translate('tienda.molido')
+                    : langManager.translate('tienda.grano');
+
+                const name = `Edición Quindío ${tamano}g (${presentacionText})`;
+
+                this.addItem({ name, price });
+                this.showFeedback(e.target);
+            });
+        }
+
+        // Botón Drip Bags (presentación fija: Molido)
+        const addDripBagsBtn = document.getElementById('addDripBagsToCart');
+        if (addDripBagsBtn) {
+            addDripBagsBtn.addEventListener('click', (e) => {
+                const price = 22000;
+                const name = 'Drip Bags';
 
                 this.addItem({ name, price });
                 this.showFeedback(e.target);
@@ -1897,4 +1949,25 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initOriginCarousel);
 } else {
     initOriginCarousel();
+}
+
+// ===================================
+// CARRUSEL DE ALIADOS (LOOP INFINITO)
+// ===================================
+function initAliadosCarrusel() {
+    const track = document.getElementById('aliadosCarruselTrack');
+    if (!track) return;
+
+    // Clonar slides para el efecto de scroll infinito continuo
+    track.innerHTML += track.innerHTML;
+
+    logger.info('Carrusel de aliados inicializado', {
+        slides: track.querySelectorAll('.aliado-slide').length
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAliadosCarrusel);
+} else {
+    initAliadosCarrusel();
 }
